@@ -31,13 +31,14 @@ function DraggableMod({
   const { attributes, listeners, setNodeRef, isDragging } = useDraggable({ id });
 
   return (
-    <div ref={setNodeRef} {...listeners} {...attributes}>
+    <div ref={setNodeRef} {...attributes}>
       <ModCard
         mod={entry.mod}
         rank={entry.rank}
         onRemove={onRemove}
         onRankChange={onRankChange}
         isDragging={isDragging}
+        dragListeners={listeners}
       />
     </div>
   );

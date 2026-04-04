@@ -13,6 +13,7 @@ interface ModCardProps {
   compact?: boolean;
   onClick?: () => void;
   isDragging?: boolean;
+  dragListeners?: Record<string, unknown>;
 }
 
 const RARITY_BORDER_COLORS: Record<string, string> = {
@@ -40,6 +41,7 @@ export function ModCard({
   compact = false,
   onClick,
   isDragging = false,
+  dragListeners,
 }: ModCardProps) {
   const drain = getModDrain(mod, rank);
   const maxRank = mod.fusionLimit;
@@ -98,8 +100,8 @@ export function ModCard({
         </button>
       )}
 
-      {/* Mod image */}
-      <div className="p-2 flex justify-center">
+      {/* Mod image — drag handle */}
+      <div className="p-2 flex justify-center cursor-grab" {...dragListeners}>
         <img
           src={getItemImageUrl(mod.imageName)}
           alt={mod.name}
