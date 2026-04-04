@@ -88,16 +88,29 @@ export function getExilusMods(): ModData[] {
   );
 }
 
-/** Get all mods that can go in warframe mod slots (regular + exilus) */
-export function getWarframeCompatibleMods(): ModData[] {
-  return modItems.filter(
-    m =>
-      (m.compatName === 'WARFRAME' ||
-        m.type === 'Warframe Mod' ||
-        m.type === 'Peculiar Mod' ||
-        m.type === 'Mod Set Mod') &&
-      m.compatName !== 'AURA'
-  );
+/** Get all mods that can go in warframe mod slots (regular + exilus).
+ *  Filters augments to only show ones for the selected warframe. */
+export function getWarframeCompatibleMods(warframeName?: string): ModData[] {
+  const baseName = warframeName
+    ? warframeName.replace(/ Prime$/, '').replace(/ Umbra$/, '')
+    : null;
+
+  return modItems.filter((m) => {
+    if (m.compatName === 'AURA') return false;
+    if (
+      m.compatName !== 'WARFRAME' &&
+      m.type !== 'Peculiar Mod' &&
+      m.type !== 'Mod Set Mod'
+    ) {
+      // This is an augment (compatName is a specific warframe name)
+      // Only include if it matches the selected warframe
+      if (m.type === 'Warframe Mod') {
+        return baseName !== null && m.compatName === baseName;
+      }
+      return false;
+    }
+    return true;
+  });
 }
 
 export function searchMods(query: string, compatFilter?: string): ModData[] {

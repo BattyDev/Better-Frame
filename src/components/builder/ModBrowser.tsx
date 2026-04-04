@@ -30,6 +30,8 @@ export function ModBrowser() {
   const aura = useBuilderStore((s) => s.aura);
   const exilus = useBuilderStore((s) => s.exilus);
 
+  const warframe = useBuilderStore((s) => s.warframe);
+
   const [search, setSearch] = useState('');
   const [polarityFilter, setPolarityFilter] = useState<Polarity | null>(null);
   const [rarityFilter, setRarityFilter] = useState<string | null>(null);
@@ -38,9 +40,9 @@ export function ModBrowser() {
   const availableMods = useMemo(() => {
     if (activeModBrowser === 'aura') return getAuraMods();
     if (activeModBrowser === 'exilus') return getExilusMods();
-    if (activeModBrowser === 'regular') return getWarframeCompatibleMods();
+    if (activeModBrowser === 'regular') return getWarframeCompatibleMods(warframe?.name);
     return [];
-  }, [activeModBrowser]);
+  }, [activeModBrowser, warframe?.name]);
 
   const availableArcanes = useMemo(() => {
     if (activeModBrowser === 'arcane') return getWarframeArcanes();
