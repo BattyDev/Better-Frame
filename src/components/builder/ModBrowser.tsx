@@ -31,6 +31,7 @@ export function ModBrowser() {
   const exilus = useBuilderStore((s) => s.exilus);
 
   const warframe = useBuilderStore((s) => s.warframe);
+  const helminthAbility = useBuilderStore((s) => s.helminthAbility);
 
   const [search, setSearch] = useState('');
   const [polarityFilter, setPolarityFilter] = useState<Polarity | null>(null);
@@ -40,9 +41,10 @@ export function ModBrowser() {
   const availableMods = useMemo(() => {
     if (activeModBrowser === 'aura') return getAuraMods();
     if (activeModBrowser === 'exilus') return getExilusMods();
-    if (activeModBrowser === 'regular') return getWarframeCompatibleMods(warframe?.name);
+    if (activeModBrowser === 'regular')
+      return getWarframeCompatibleMods(warframe?.name, helminthAbility);
     return [];
-  }, [activeModBrowser, warframe?.name]);
+  }, [activeModBrowser, warframe?.name, helminthAbility]);
 
   const availableArcanes = useMemo(() => {
     if (activeModBrowser === 'arcane') return getWarframeArcanes();

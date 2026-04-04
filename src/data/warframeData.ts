@@ -89,8 +89,12 @@ export function getExilusMods(): ModData[] {
 }
 
 /** Get all mods that can go in warframe mod slots (regular + exilus).
- *  Filters augments to only show ones for the selected warframe. */
-export function getWarframeCompatibleMods(warframeName?: string): ModData[] {
+ *  Filters augments to only show ones for the selected warframe,
+ *  plus augments for any Helminth-infused ability. */
+export function getWarframeCompatibleMods(
+  warframeName?: string,
+  helminthAbility?: { source: string; ability: string } | null,
+): ModData[] {
   const baseName = warframeName
     ? warframeName.replace(/ Prime$/, '').replace(/ Umbra$/, '')
     : null;
@@ -103,9 +107,19 @@ export function getWarframeCompatibleMods(warframeName?: string): ModData[] {
       m.type !== 'Mod Set Mod'
     ) {
       // This is an augment (compatName is a specific warframe name)
-      // Only include if it matches the selected warframe
       if (m.type === 'Warframe Mod') {
-        return baseName !== null && m.compatName === baseName;
+        // Allow if it's for the selected warframe
+        if (baseName !== null && m.compatName === baseName) return true;
+        // Allow if it augments the Helminth-infused ability
+        if (
+          helminthAbility &&
+          helminthAbility.source !== 'Helminth' &&
+          m.compatName === helminthAbility.source &&
+          m.augmentFor === helminthAbility.ability
+        ) {
+          return true;
+        }
+        return false;
       }
       return false;
     }

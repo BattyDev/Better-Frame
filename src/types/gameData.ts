@@ -51,6 +51,8 @@ export interface ModData {
   wikiaUrl?: string;
   // Set mod info
   modSet?: string;
+  // For augments: which ability this mod augments (e.g., "Molt", "Shock")
+  augmentFor?: string;
 }
 
 export interface ModLevelStat {

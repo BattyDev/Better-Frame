@@ -41,6 +41,9 @@ interface BuilderState {
   // Exilus slot polarity
   exilusPolarity: Polarity | null;
 
+  // Helminth: infused ability replacing one of the warframe's abilities
+  helminthAbility: { source: string; ability: string } | null;
+
   // Build options
   hasReactor: boolean;
   formaCount: number;
@@ -73,6 +76,9 @@ interface BuilderActions {
   setArcane: (slotIndex: 0 | 1, arcane: ArcaneData, rank: number) => void;
   removeArcane: (slotIndex: 0 | 1) => void;
 
+  // Helminth
+  setHelminthAbility: (ability: { source: string; ability: string } | null) => void;
+
   // Forma / Reactor
   setSlotPolarity: (slotIndex: number, polarity: Polarity | null) => void;
   setAuraPolarity: (polarity: Polarity | null) => void;
@@ -101,6 +107,7 @@ export interface SerializedBuildConfig {
   exilusPolarity: Polarity | null;
   formaCount: number;
   hasReactor: boolean;
+  helminthAbility: { source: string; ability: string } | null;
 }
 
 const EMPTY_CAPACITY: CapacityResult = {
@@ -126,6 +133,7 @@ function createInitialState(): BuilderState {
     slotPolarities: Array(8).fill(null),
     auraPolarity: null,
     exilusPolarity: null,
+    helminthAbility: null,
     hasReactor: false,
     formaCount: 0,
     activeModBrowser: null,
@@ -268,6 +276,9 @@ export const useBuilderStore = create<BuilderState & BuilderActions>()((set, get
       return { arcanes };
     }),
 
+  setHelminthAbility: (ability) =>
+    set({ helminthAbility: ability }),
+
   setSlotPolarity: (slotIndex, polarity) =>
     set((state) => {
       const slotPolarities = [...state.slotPolarities];
@@ -348,6 +359,7 @@ export const useBuilderStore = create<BuilderState & BuilderActions>()((set, get
       exilusPolarity: state.exilusPolarity,
       formaCount: state.formaCount,
       hasReactor: state.hasReactor,
+      helminthAbility: state.helminthAbility,
     };
   },
 
@@ -392,6 +404,7 @@ export const useBuilderStore = create<BuilderState & BuilderActions>()((set, get
         slotPolarities: config.slotPolarities,
         auraPolarity: config.auraPolarity,
         exilusPolarity: config.exilusPolarity,
+        helminthAbility: config.helminthAbility ?? null,
         hasReactor: config.hasReactor,
         formaCount: config.formaCount,
         activeModBrowser: null,

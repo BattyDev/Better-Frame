@@ -34,25 +34,58 @@ const slimWarframes = warframes.map(wf => ({
   exalted: wf.exalted,
 }));
 
+// Build augment -> ability name mapping using uniqueName patterns
+function getAbilityKey(uniqueName) {
+  const match = uniqueName.match(/\/([^/]+?)Ability$/i);
+  return match ? match[1].toLowerCase() : null;
+}
+function getAugmentAbilityKey(uniqueName) {
+  const match = uniqueName.match(/\/([^/]+?)(?:Augment|PvPAugment)Card$/i);
+  return match ? match[1].toLowerCase() : null;
+}
+
+// Build ability key -> ability name map from all warframes (base versions only)
+const baseWarframes = warframes.filter(wf => !wf.isPrime && wf.name !== 'Excalibur Umbra');
+const abilityKeyToName = new Map(); // key: "warframeName|abilityKey" -> ability name
+for (const wf of baseWarframes) {
+  for (const ability of (wf.abilities || [])) {
+    const key = getAbilityKey(ability.uniqueName);
+    if (key) abilityKeyToName.set(`${wf.name}|${key}`, ability.name);
+  }
+}
+
 // Mods: only keep fields we use
 const mods = JSON.parse(readFileSync(resolve(NODE_DATA, 'Mods.json'), 'utf-8'));
 const slimMods = mods
   .filter(m => m.levelStats && m.levelStats.length > 0) // only mods with stats
-  .map(m => ({
-    uniqueName: m.uniqueName,
-    name: m.name,
-    imageName: m.imageName,
-    type: m.type,
-    compatName: m.compatName,
-    polarity: m.polarity,
-    rarity: m.rarity,
-    baseDrain: m.baseDrain,
-    fusionLimit: m.fusionLimit,
-    levelStats: m.levelStats,
-    ...(m.isExilus ? { isExilus: true } : {}),
-    ...(m.isAugment ? { isAugment: true } : {}),
-    ...(m.modSet ? { modSet: m.modSet } : {}),
-  }));
+  .map(m => {
+    const base = {
+      uniqueName: m.uniqueName,
+      name: m.name,
+      imageName: m.imageName,
+      type: m.type,
+      compatName: m.compatName,
+      polarity: m.polarity,
+      rarity: m.rarity,
+      baseDrain: m.baseDrain,
+      fusionLimit: m.fusionLimit,
+      levelStats: m.levelStats,
+      ...(m.isExilus ? { isExilus: true } : {}),
+      ...(m.isAugment ? { isAugment: true } : {}),
+      ...(m.modSet ? { modSet: m.modSet } : {}),
+    };
+
+    // For augments, resolve which ability they augment
+    if (m.isAugment && m.compatName) {
+      const augKey = getAugmentAbilityKey(m.uniqueName);
+      if (augKey) {
+        const abilityName = abilityKeyToName.get(`${m.compatName}|${augKey}`);
+        if (abilityName) base.augmentFor = abilityName;
+      }
+    }
+
+    return base;
+  });
 
 // Arcanes: only keep fields we use
 const arcanes = JSON.parse(readFileSync(resolve(NODE_DATA, 'Arcanes.json'), 'utf-8'));

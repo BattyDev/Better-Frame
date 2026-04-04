@@ -5,6 +5,7 @@ import { ModBrowser } from '../components/builder/ModBrowser';
 import { CapacityBar } from '../components/builder/CapacityBar';
 import { StatsPanel } from '../components/builder/StatsPanel';
 import { ArcaneSlots } from '../components/builder/ArcaneSlots';
+import { HelminthSelector } from '../components/builder/HelminthSelector';
 import { FormaCounter } from '../components/builder/FormaSelector';
 import { useBuilderStore } from '../stores/builderStore';
 import { useAuthStore } from '../stores/authStore';
@@ -117,6 +118,7 @@ export default function Builder() {
             <CapacityBar />
             <ModSlotGrid />
             <ArcaneSlots />
+            <HelminthSelector />
           </div>
 
           {/* Right: Stats panel */}
