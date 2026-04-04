@@ -1,0 +1,64 @@
+@import "tailwindcss";
+
+@theme {
+  /* Warframe-inspired color palette */
+  --color-wf-bg-dark: #0a0e17;
+  --color-wf-bg: #111827;
+  --color-wf-bg-light: #1a2235;
+  --color-wf-bg-card: #1e293b;
+  --color-wf-bg-hover: #253249;
+
+  --color-wf-gold: #c8a94e;
+  --color-wf-gold-light: #e0c868;
+  --color-wf-gold-dim: #8a7535;
+
+  --color-wf-blue: #4a9eff;
+  --color-wf-blue-light: #7cb8ff;
+  --color-wf-blue-dim: #2a5a8f;
+
+  --color-wf-text: #e2e8f0;
+  --color-wf-text-dim: #94a3b8;
+  --color-wf-text-muted: #64748b;
+
+  --color-wf-border: #2a3548;
+  --color-wf-border-light: #3b4a60;
+
+  --color-wf-accent: #7c3aed;
+  --color-wf-success: #22c55e;
+  --color-wf-warning: #f59e0b;
+  --color-wf-danger: #ef4444;
+
+  /* Mod rarity colors */
+  --color-rarity-common: #8b6914;
+  --color-rarity-uncommon: #a0a0a0;
+  --color-rarity-rare: #c8a94e;
+  --color-rarity-legendary: #e0e0e0;
+  --color-rarity-riven: #a855f7;
+
+  /* Polarity colors */
+  --color-polarity-madurai: #c8a94e;
+  --color-polarity-vazarin: #4a9eff;
+  --color-polarity-naramon: #22c55e;
+  --color-polarity-zenurik: #f59e0b;
+  --color-polarity-unairu: #ef4444;
+  --color-polarity-penjaga: #a855f7;
+  --color-polarity-umbra: #e2e8f0;
+
+  --font-sans: "Inter", system-ui, -apple-system, sans-serif;
+  --font-mono: ui-monospace, "Cascadia Code", Consolas, monospace;
+}
+
+body {
+  margin: 0;
+  background-color: var(--color-wf-bg-dark);
+  color: var(--color-wf-text);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+#root {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
