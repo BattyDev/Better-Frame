@@ -7,9 +7,10 @@ export default function Home() {
   return (
     <div className="flex flex-col items-center justify-center flex-1 px-4 py-16">
       <h1 className="text-5xl font-bold text-wf-gold mb-4 tracking-tight">
-        Better Frame
+        Tenno Trove
       </h1>
       <p className="text-wf-text-dim text-lg mb-8 max-w-xl text-center">
+        A vault full of builds.
         Build, share, and discover complete Warframe loadouts.
         Not just single builds — full loadouts with every slot.
       </p>

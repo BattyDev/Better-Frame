@@ -9,7 +9,7 @@ export default function Layout() {
         <Outlet />
       </main>
       <footer className="border-t border-wf-border py-4 px-4 text-center text-xs text-wf-text-muted">
-        Better Frame is not affiliated with Digital Extremes or Warframe.
+        Tenno Trove, a vault full of builds. Not affiliated with Digital Extremes or Warframe.
       </footer>
     </div>
   );

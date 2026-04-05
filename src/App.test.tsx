@@ -24,7 +24,7 @@ vi.mock('./lib/supabase', () => ({
 describe('App', () => {
   it('renders the home page with app title', async () => {
     render(<App />);
-    const titles = await screen.findAllByText('Better Frame');
+    const titles = await screen.findAllByText('Tenno Trove');
     expect(titles.length).toBeGreaterThanOrEqual(1);
   });
 

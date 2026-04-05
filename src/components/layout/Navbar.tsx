@@ -22,7 +22,7 @@ export default function Navbar() {
       <div className="max-w-7xl mx-auto flex items-center justify-between">
         <div className="flex items-center gap-6">
           <Link to="/" className="text-wf-gold font-bold text-xl tracking-tight">
-            Better Frame
+            Tenno Trove
           </Link>
           <div className="hidden sm:flex items-center gap-1">
             {navLinks.map((link) => (
