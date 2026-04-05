@@ -3,7 +3,6 @@
 export interface UserProfile {
   id: string;
   username: string;
-  displayName: string | null;
   avatarUrl: string | null;
   isPremium: boolean;
   role: 'user' | 'moderator' | 'admin';

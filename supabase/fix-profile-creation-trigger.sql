@@ -22,10 +22,9 @@ begin
     v_username := 'user_' || left(new.id::text, 8);
   end if;
 
-  insert into public.profiles (id, username, display_name)
+  insert into public.profiles (id, username)
   values (
     new.id,
-    v_username,
     v_username
   );
   return new;

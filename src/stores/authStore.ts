@@ -129,7 +129,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     return { error: null };
   },
 
-  updateProfile: async (updates: { username?: string; displayName?: string | null }): Promise<{ error: string | null }> => {
+  updateProfile: async (updates: { username?: string }): Promise<{ error: string | null }> => {
     const state = get();
     if (!state.user) {
       return { error: 'Not authenticated' };
