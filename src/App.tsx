@@ -29,7 +29,14 @@ import Dashboard from './pages/Dashboard';
 import Login from './pages/Login';
 import SignUp from './pages/SignUp';
 
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      gcTime: 600_000,
+      refetchOnWindowFocus: true,
+    },
+  },
+});
 
 function AppContent() {
   const initialize = useAuthStore((s: ReturnType<typeof useAuthStore.getState>) => s.initialize);
