@@ -9,6 +9,8 @@ import WeaponBuilder from './pages/WeaponBuilder';
 import Loadout from './pages/Loadout';
 import Browse from './pages/Browse';
 import Profile from './pages/Profile';
+import BuildPage from './pages/BuildPage';
+import UserProfile from './pages/UserProfile';
 import Login from './pages/Login';
 import SignUp from './pages/SignUp';
 
@@ -38,6 +40,8 @@ function AppContent() {
         <Route path="/builder/:category" element={<WeaponBuilder />} />
         <Route path="/loadout" element={<Loadout />} />
         <Route path="/browse" element={<Browse />} />
+        <Route path="/build/:id" element={<BuildPage />} />
+        <Route path="/user/:username" element={<UserProfile />} />
         <Route path="/profile" element={<Profile />} />
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<SignUp />} />

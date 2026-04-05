@@ -41,16 +41,26 @@ export default function Navbar() {
 
         <div className="flex items-center gap-3">
           {user ? (
-            <Link
-              to="/profile"
-              className={`px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${
-                location.pathname === '/profile'
-                  ? 'bg-wf-bg-hover text-wf-gold'
-                  : 'text-wf-text-dim hover:text-wf-text hover:bg-wf-bg-light'
-              }`}
-            >
-              {profile?.username ?? 'Profile'}
-            </Link>
+            <div className="flex items-center gap-1">
+              {profile && (
+                <Link
+                  to={`/user/${profile.username}`}
+                  className="hidden sm:block px-3 py-1.5 rounded-md text-sm font-medium text-wf-text-dim hover:text-wf-text hover:bg-wf-bg-light transition-colors"
+                >
+                  Public Profile
+                </Link>
+              )}
+              <Link
+                to="/profile"
+                className={`px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${
+                  location.pathname === '/profile'
+                    ? 'bg-wf-bg-hover text-wf-gold'
+                    : 'text-wf-text-dim hover:text-wf-text hover:bg-wf-bg-light'
+                }`}
+              >
+                {profile?.username ?? 'Profile'}
+              </Link>
+            </div>
           ) : (
             <>
               <Link

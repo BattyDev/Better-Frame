@@ -91,3 +91,72 @@ export type Polarity =
   | 'penjaga'
   | 'umbra'
   | 'aura';
+
+// --- Phase 3: Social ---
+
+export interface PublicBuildSummary {
+  id: string;
+  name: string;
+  description: string | null;
+  itemUniqueName: string;
+  itemCategory: ItemCategory;
+  isPublic: boolean;
+  voteScore: number;
+  viewCount: number;
+  gameVersion: string | null;
+  tags: string[];
+  createdAt: string;
+  updatedAt: string;
+  author: {
+    id: string;
+    username: string;
+    displayName: string | null;
+  };
+}
+
+export interface PublicBuild extends PublicBuildSummary {
+  config: BuildConfig;
+}
+
+export interface Vote {
+  userId: string;
+  targetId: string;
+  targetType: 'build' | 'loadout';
+  value: 1 | -1;
+}
+
+export interface Comment {
+  id: string;
+  userId: string;
+  targetId: string;
+  targetType: 'build' | 'loadout';
+  parentCommentId: string | null;
+  body: string;
+  isHidden: boolean;
+  createdAt: string;
+  updatedAt: string;
+  author: {
+    id: string;
+    username: string;
+    displayName: string | null;
+  };
+  replies?: Comment[];
+}
+
+export type ReportReason =
+  | 'incorrect_stats'
+  | 'outdated'
+  | 'spam'
+  | 'inappropriate'
+  | 'other';
+
+export interface Report {
+  id: string;
+  reporterId: string;
+  targetType: 'build' | 'loadout' | 'comment';
+  targetId: string;
+  reason: ReportReason;
+  notes: string | null;
+  status: 'pending' | 'reviewed' | 'dismissed';
+  createdAt: string;
+}
