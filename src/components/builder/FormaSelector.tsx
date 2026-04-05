@@ -19,8 +19,6 @@ export function FormaSelector({ slotType, slotIndex, currentPolarity }: FormaSel
   const setSlotPolarity = useBuilderStore((s) => s.setSlotPolarity);
   const setAuraPolarity = useBuilderStore((s) => s.setAuraPolarity);
   const setExilusPolarity = useBuilderStore((s) => s.setExilusPolarity);
-  const formaCount = useBuilderStore((s) => s.formaCount);
-
   function handleSelect(polarity: Polarity | null) {
     if (slotType === 'aura') {
       setAuraPolarity(polarity);

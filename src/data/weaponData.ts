@@ -195,7 +195,7 @@ export function getWeaponCompatibleMods(
 }
 
 /** Detect melee weapon type from its uniqueName or attacks for stance matching. */
-export function getMeleeWeaponType(weapon: WeaponData): string | undefined {
+export function getMeleeWeaponType(_weapon: WeaponData): string | undefined {
   // Stance mods use compatName matching to weapon types
   // We can infer the weapon type from the stancePolarity and matching stance mods
   // For now, return undefined - the user picks the stance from compatible ones

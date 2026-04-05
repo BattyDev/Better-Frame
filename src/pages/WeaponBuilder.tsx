@@ -3,10 +3,8 @@ import { useParams } from 'react-router-dom';
 import { WeaponSelector } from '../components/builder/WeaponSelector';
 import { WeaponModSlotGrid } from '../components/builder/WeaponModSlotGrid';
 import { WeaponModBrowser } from '../components/builder/WeaponModBrowser';
-import { CapacityBar } from '../components/builder/CapacityBar';
 import { WeaponStatsPanel } from '../components/builder/WeaponStatsPanel';
 import { BonusElementSelector } from '../components/builder/BonusElementSelector';
-import { FormaCounter } from '../components/builder/FormaSelector';
 import { useWeaponBuilderStore } from '../stores/weaponBuilderStore';
 import { useAuthStore } from '../stores/authStore';
 import { supabase } from '../lib/supabase';
@@ -22,7 +20,6 @@ export default function WeaponBuilder() {
   const category = (categoryParam?.charAt(0).toUpperCase() + (categoryParam?.slice(1) ?? '')) as WeaponCategory;
 
   const weapon = useWeaponBuilderStore((s) => s.weapon);
-  const capacity = useWeaponBuilderStore((s) => s.capacity);
   const hasCatalyst = useWeaponBuilderStore((s) => s.hasCatalyst);
   const formaCount = useWeaponBuilderStore((s) => s.formaCount);
   const exportConfig = useWeaponBuilderStore((s) => s.exportConfig);

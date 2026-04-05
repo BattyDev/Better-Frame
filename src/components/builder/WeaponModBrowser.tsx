@@ -7,7 +7,7 @@ import {
   getStanceMods,
 } from '../../data/weaponData';
 import { ModCard } from './ModCard';
-import type { ModData, WeaponCategory } from '../../types/gameData';
+import type { ModData } from '../../types/gameData';
 import type { Polarity } from '../../types';
 
 const POLARITY_OPTIONS: Polarity[] = [

@@ -79,7 +79,7 @@ function ReadOnlyModSlot({ mod, label }: ReadOnlyModSlotProps) {
           <p className="text-xs text-wf-text font-medium leading-tight truncate">{modData.name}</p>
           {modData.levelStats && mod && mod.rank > 0 && (
             <p className="text-xs text-wf-text-muted leading-tight mt-0.5 truncate">
-              {modData.levelStats[mod.rank - 1]?.stats[0]?.value?.replace(/<[^>]+>/g, '') ?? ''}
+              {modData.levelStats[mod.rank - 1]?.stats[0]?.replace(/<[^>]+>/g, '') ?? ''}
             </p>
           )}
           <div className="flex gap-0.5 mt-1">
@@ -125,7 +125,7 @@ function ReadOnlyModGrid({ build }: ReadOnlyModGridProps) {
       {isWarframe && (config.arcanes[0] || config.arcanes[1]) && (
         <div className="grid grid-cols-2 gap-2">
           {config.arcanes.map((arc, i) => (
-            <ReadOnlyModSlot key={i} mod={arc} label="Arcane" isWarframe={true} />
+            <ReadOnlyModSlot key={i} mod={arc} label="Arcane" />
           ))}
         </div>
       )}

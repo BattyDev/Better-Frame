@@ -24,8 +24,20 @@ export interface BuildConfig {
   exilus: SlottedMod | null;
   arcanes: [SlottedMod | null, SlottedMod | null];
   polarities: string[];
+  slotPolarities?: (Polarity | null)[];
+  auraPolarity?: Polarity | null;
+  exilusPolarity?: Polarity | null;
   formaCount: number;
   hasReactor: boolean;
+  helminthAbility?: { source: string; ability: string } | null;
+  // Weapon-specific fields (stance, catalyst, etc.)
+  stance?: SlottedMod | null;
+  stancePolarity?: string | null;
+  hasCatalyst?: boolean;
+  bonusElement?: string | null;
+  bonusElementValue?: number;
+  comboDuration?: number;
+  heavyAttack?: number;
 }
 
 export interface Build {

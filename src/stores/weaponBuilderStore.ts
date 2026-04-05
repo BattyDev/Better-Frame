@@ -3,10 +3,8 @@ import { create } from 'zustand';
 import type { Polarity } from '../types';
 import type { WeaponData, WeaponCategory, DamageType, ModData } from '../types/gameData';
 import { getModByUniqueName } from '../data/warframeData';
-import { getWeaponByUniqueName } from '../data/weaponData';
 import { calculateCapacity, type CapacityResult } from '../lib/math/capacityCalc';
 import { calculateWeaponStats, type WeaponCalculatedStats } from '../lib/math/weaponCalc';
-import { getModDrain } from '../lib/math/modParser';
 
 export interface SlottedModEntry {
   mod: ModData;

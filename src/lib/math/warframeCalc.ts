@@ -140,7 +140,8 @@ export function calculateWarframeStats(
   const modded: Record<string, number> = {};
 
   for (const statKey of MULTIPLICATIVE_STATS) {
-    const baseVal = baseStats[statKey];
+    const baseVal = baseStats[statKey as keyof WarframeBaseStats] as number | undefined;
+    if (baseVal === undefined) continue;
     base[statKey] = baseVal;
 
     const totalBonus = modifiersByStat.get(statKey) ?? 0;

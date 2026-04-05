@@ -8,13 +8,10 @@
 // 6. Fire Rate / Reload: for sustained DPS
 
 import type { WeaponData, DamageType, ModData } from '../../types/gameData';
-import { parseModStats } from './modParser';
 import {
   parseWeaponStatString,
   isDamageType,
-  isBaseElement,
   isPhysicalDamage,
-  isCombinedElement,
   type WeaponStatKey,
 } from './weaponStatRegistry';
 import {

@@ -18,7 +18,7 @@ import type { Polarity } from '../../types';
 function DraggableMod({
   id,
   entry,
-  slotIndex,
+  slotIndex: _slotIndex,
   onRemove,
   onRankChange,
 }: {
@@ -95,7 +95,6 @@ export function ModSlotGrid() {
   const exilusPolarity = useBuilderStore((s) => s.exilusPolarity);
   const warframe = useBuilderStore((s) => s.warframe);
 
-  const setMod = useBuilderStore((s) => s.setMod);
   const removeMod = useBuilderStore((s) => s.removeMod);
   const setModRank = useBuilderStore((s) => s.setModRank);
   const moveMod = useBuilderStore((s) => s.moveMod);

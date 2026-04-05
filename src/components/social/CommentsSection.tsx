@@ -17,13 +17,11 @@ function CommentItem({ comment, targetId, targetType, depth = 0 }: CommentItemPr
   const { user } = useAuthStore();
   const queryClient = useQueryClient();
   const [replyOpen, setReplyOpen] = useState(false);
-  const [replyText, setReplyText] = useState('');
 
   const replyMutation = useMutation({
     mutationFn: (body: string) => addComment(targetId, targetType, body, comment.id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['comments', targetId, targetType] });
-      setReplyText('');
       setReplyOpen(false);
     },
   });

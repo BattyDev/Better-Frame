@@ -1,6 +1,6 @@
 // Weapon selector: searchable grid with images from CDN, variant filtering, MR display
 import { useState, useMemo } from 'react';
-import { getWeaponsByCategory, searchWeapons } from '../../data/weaponData';
+import { getWeaponsByCategory } from '../../data/weaponData';
 import { getItemImageUrl } from '../../data/warframeData';
 import { useWeaponBuilderStore } from '../../stores/weaponBuilderStore';
 import type { WeaponData, WeaponCategory } from '../../types/gameData';

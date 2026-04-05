@@ -194,7 +194,7 @@ export const useBuilderStore = create<BuilderState & BuilderActions>()((set, get
   ...createInitialState(),
 
   selectWarframe: (warframe) =>
-    set((state) => {
+    set(() => {
       const newState = {
         ...createInitialState(),
         warframe,
