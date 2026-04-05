@@ -235,7 +235,7 @@ export default function BuildPage() {
               to={`/user/${build.author.username}`}
               className="text-sm text-wf-blue hover:underline"
             >
-              {build.author.displayName ?? build.author.username}
+              {build.author.username}
             </Link>
             <FreshnessBanner gameVersion={build.gameVersion} />
           </div>

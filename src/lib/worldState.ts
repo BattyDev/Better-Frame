@@ -171,12 +171,41 @@ export interface WorldState {
 
 // ─── Fetch ──────────────────────────────────────────────────────────────────
 
+export class EmptyResponseError extends Error {
+  constructor() {
+    super('World state API returned an empty response');
+    this.name = 'EmptyResponseError';
+  }
+}
+
 export async function fetchWorldState(): Promise<WorldState> {
   const res = await fetch(`${API_BASE}/`, {
     headers: { Accept: 'application/json' },
   });
   if (!res.ok) throw new Error(`World state API error: ${res.status}`);
-  return res.json();
+  const text = await res.text();
+  if (!text.trim()) throw new EmptyResponseError();
+  try {
+    return JSON.parse(text);
+  } catch {
+    throw new Error('World state API returned invalid JSON');
+  }
+}
+
+/** Returns the soonest future cycle expiry as a timestamp (ms). */
+export function getSoonestExpiry(ws: WorldState): number {
+  const expiries = [
+    ws.cetusCycle?.expiry,
+    ws.vallisCycle?.expiry,
+    ws.cambionCycle?.expiry,
+    ws.earthCycle?.expiry,
+    ws.zarimanCycle?.expiry,
+    ws.duviriCycle?.expiry,
+  ]
+    .filter(Boolean)
+    .map(e => new Date(e!).getTime())
+    .filter(t => t > Date.now());
+  return expiries.length ? Math.min(...expiries) : Date.now() + 60_000;
 }
 
 // ─── Time helpers ───────────────────────────────────────────────────────────

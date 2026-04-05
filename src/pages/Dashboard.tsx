@@ -1,9 +1,11 @@
 import { useState, useEffect, useCallback } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, keepPreviousData } from '@tanstack/react-query';
 import {
   fetchWorldState,
   getTimeRemaining,
   formatCredits,
+  getSoonestExpiry,
+  EmptyResponseError,
   type WorldState,
   type Fissure,
   type Invasion,
@@ -428,13 +430,23 @@ function SteelPathTracker({ data }: { data: WorldState }) {
 
 export default function Dashboard() {
   const [pins, setPins] = useState<Set<TrackerKey>>(getStoredPins);
-  const [refreshInterval, setRefreshInterval] = useState(60000);
 
-  const { data, isLoading, error, dataUpdatedAt } = useQuery({
+  const { data, isLoading, error, dataUpdatedAt, refetch, isRefetching } = useQuery({
     queryKey: ['worldState'],
     queryFn: fetchWorldState,
-    refetchInterval: refreshInterval,
-    staleTime: 30000,
+    placeholderData: keepPreviousData,
+    staleTime: 30_000,
+    refetchInterval: (query) => {
+      const ws = query.state.data as WorldState | undefined;
+      if (!ws) return 60_000;
+      const msUntilExpiry = getSoonestExpiry(ws) - Date.now() + 5_000;
+      return Math.max(10_000, Math.min(msUntilExpiry, 300_000));
+    },
+    retry: (failureCount, error) => {
+      if (error instanceof EmptyResponseError) return failureCount < 5;
+      return failureCount < 3;
+    },
+    retryDelay: (attempt) => Math.min(1000 * 2 ** attempt, 15_000),
   });
 
   const togglePin = useCallback((key: TrackerKey) => {
@@ -454,7 +466,7 @@ export default function Dashboard() {
     return ap - bp;
   });
 
-  if (isLoading) {
+  if (isLoading && !data) {
     return (
       <div className="max-w-5xl mx-auto flex items-center justify-center py-20">
         <div className="text-wf-gold text-lg">Loading world state...</div>
@@ -462,12 +474,19 @@ export default function Dashboard() {
     );
   }
 
-  if (error || !data) {
+  if (!data) {
     return (
-      <div className="max-w-5xl mx-auto flex items-center justify-center py-20">
+      <div className="max-w-5xl mx-auto flex flex-col items-center justify-center py-20 gap-4">
         <div className="text-wf-danger text-sm">
-          Failed to load world state. Please try again later.
+          Failed to load world state.
         </div>
+        <button
+          onClick={() => refetch()}
+          disabled={isRefetching}
+          className="px-4 py-1.5 text-sm rounded bg-wf-gold/20 text-wf-gold hover:bg-wf-gold/30 disabled:opacity-50 transition-colors"
+        >
+          {isRefetching ? 'Retrying...' : 'Retry'}
+        </button>
       </div>
     );
   }
@@ -488,15 +507,6 @@ export default function Dashboard() {
       <div className="flex items-center justify-between">
         <h1 className="text-xl font-bold text-wf-gold">World State</h1>
         <div className="flex items-center gap-3">
-          <select
-            value={refreshInterval}
-            onChange={(e) => setRefreshInterval(Number(e.target.value))}
-            className="text-xs px-2 py-1 rounded bg-wf-bg border border-wf-border text-wf-text"
-          >
-            <option value={30000}>30s refresh</option>
-            <option value={60000}>60s refresh</option>
-            <option value={120000}>2m refresh</option>
-          </select>
           {dataUpdatedAt > 0 && (
             <span className="text-xs text-wf-text-muted">
               Updated {new Date(dataUpdatedAt).toLocaleTimeString()}
@@ -504,6 +514,21 @@ export default function Dashboard() {
           )}
         </div>
       </div>
+
+      {error && (
+        <div className="flex items-center justify-between px-4 py-2 rounded bg-wf-warning/10 border border-wf-warning/30">
+          <span className="text-xs text-wf-warning">
+            Using cached data — last update failed
+          </span>
+          <button
+            onClick={() => refetch()}
+            disabled={isRefetching}
+            className="text-xs px-3 py-1 rounded bg-wf-warning/20 text-wf-warning hover:bg-wf-warning/30 disabled:opacity-50 transition-colors"
+          >
+            {isRefetching ? 'Retrying...' : 'Retry Now'}
+          </button>
+        </div>
+      )}
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
         {sortedTrackers.map(key => (

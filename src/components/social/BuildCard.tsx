@@ -86,7 +86,7 @@ export function BuildCard({ build, showOwnerControls, onTogglePublic }: BuildCar
             }}
             className="text-wf-blue hover:underline cursor-pointer"
           >
-            {build.author.displayName ?? build.author.username}
+            {build.author.username}
           </span>
         </p>
 

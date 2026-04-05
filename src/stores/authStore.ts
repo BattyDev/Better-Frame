@@ -23,7 +23,7 @@ interface AuthState {
   signIn: (email: string, password: string) => Promise<{ error: string | null }>;
   signOut: () => Promise<void>;
   resendConfirmation: (email: string) => Promise<{ error: string | null }>;
-  updateProfile: (updates: { username?: string; displayName?: string | null }) => Promise<{ error: string | null }>;
+  updateProfile: (updates: { username?: string }) => Promise<{ error: string | null }>;
   initialize: () => Promise<void>;
 }
 

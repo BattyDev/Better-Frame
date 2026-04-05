@@ -84,7 +84,7 @@ export default function LoadoutPage() {
             to={`/user/${loadout.author.username}`}
             className="text-sm text-wf-blue hover:underline"
           >
-            {loadout.author.displayName ?? loadout.author.username}
+            {loadout.author.username}
           </Link>
           {loadout.gameVersion && (
             <span className="text-xs text-wf-text-muted">Patch {loadout.gameVersion}</span>

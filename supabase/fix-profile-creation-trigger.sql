@@ -9,11 +9,9 @@ returns trigger as $$
 declare
   v_username text;
 begin
-  -- Try to get username from raw_user_meta_data
-  -- raw_user_meta_data is a JSONB field that contains metadata passed during signup
+  -- Get username from raw_user_meta_data (JSONB field with metadata passed during signup)
   v_username := coalesce(
     (new.raw_user_meta_data ->> 'username'),
-    (new.raw_user_meta_data::text ->> 'username'),
     'user_' || left(new.id::text, 8)
   );
 
