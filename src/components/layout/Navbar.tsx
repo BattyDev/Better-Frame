@@ -3,7 +3,11 @@ import { useAuthStore } from '../../stores/authStore';
 
 const navLinks = [
   { to: '/', label: 'Home' },
-  { to: '/builder', label: 'Builder' },
+  { to: '/builder', label: 'Warframe' },
+  { to: '/builder/primary', label: 'Primary' },
+  { to: '/builder/secondary', label: 'Secondary' },
+  { to: '/builder/melee', label: 'Melee' },
+  { to: '/loadout', label: 'Loadout' },
   { to: '/browse', label: 'Browse' },
 ];
 

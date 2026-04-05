@@ -30,7 +30,8 @@ describe('App', () => {
 
   it('shows navigation links', async () => {
     render(<App />);
-    expect(await screen.findByText('Builder')).toBeInTheDocument();
+    expect(await screen.findByText('Warframe')).toBeInTheDocument();
+    expect(await screen.findByText('Primary')).toBeInTheDocument();
     expect(await screen.findByText('Browse')).toBeInTheDocument();
   });
 

@@ -110,6 +110,15 @@ export default function Builder() {
       {/* Warframe selector / header */}
       <WarframeSelector />
 
+      {/* Exalted weapon indicator */}
+      {warframe && warframe.exalted && warframe.exalted.length > 0 && (
+        <div className="mt-4 p-3 rounded-lg bg-wf-bg-card border border-wf-border">
+          <span className="text-xs text-wf-text-dim">
+            This warframe has exalted weapons — build them in the weapon builders.
+          </span>
+        </div>
+      )}
+
       {/* Builder layout */}
       {warframe && (
         <div className="mt-6 grid grid-cols-1 lg:grid-cols-[1fr_280px] gap-6">

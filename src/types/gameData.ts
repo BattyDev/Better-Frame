@@ -72,6 +72,57 @@ export interface ArcaneData {
   tradable: boolean;
 }
 
+// ---- Weapon data ----
+
+export type WeaponCategory = 'Primary' | 'Secondary' | 'Melee';
+
+export type DamageType =
+  | 'impact' | 'puncture' | 'slash'
+  | 'heat' | 'cold' | 'electricity' | 'toxin'
+  | 'blast' | 'corrosive' | 'gas' | 'magnetic' | 'radiation' | 'viral'
+  | 'void' | 'true';
+
+export interface WeaponAttack {
+  name: string;
+  speed: number;
+  crit_chance: number;
+  crit_mult: number;
+  status_chance: number;
+  damage: Partial<Record<DamageType, number>>;
+  shot_type?: string;
+  falloff?: { start: number; end: number; reduction: number };
+}
+
+export interface WeaponData {
+  uniqueName: string;
+  name: string;
+  description: string;
+  imageName: string;
+  category: WeaponCategory;
+  masteryReq: number;
+  attacks: WeaponAttack[];
+  fireRate: number;
+  magazineSize?: number;
+  reloadTime?: number;
+  totalDamage: number;
+  polarities: string[];
+  isPrime: boolean;
+  noise?: string;
+  trigger?: string;
+  accuracy?: number;
+  // Melee-specific
+  stancePolarity?: string;
+  comboDuration?: number;
+  followThrough?: number;
+  range?: number;
+  slamAttack?: number;
+  heavySlamAttack?: number;
+  heavyAttack?: number;
+  // Variant info
+  vaulted?: boolean;
+  omegaAttenuation?: number;
+}
+
 // Parsed stat modifier from levelStats strings
 export interface StatModifier {
   stat: string; // normalized stat key e.g. 'health', 'abilityStrength'

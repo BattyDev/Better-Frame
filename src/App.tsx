@@ -5,6 +5,8 @@ import { useAuthStore } from './stores/authStore';
 import Layout from './components/layout/Layout';
 import Home from './pages/Home';
 import Builder from './pages/Builder';
+import WeaponBuilder from './pages/WeaponBuilder';
+import Loadout from './pages/Loadout';
 import Browse from './pages/Browse';
 import Profile from './pages/Profile';
 import Login from './pages/Login';
@@ -33,6 +35,8 @@ function AppContent() {
       <Route element={<Layout />}>
         <Route path="/" element={<Home />} />
         <Route path="/builder" element={<Builder />} />
+        <Route path="/builder/:category" element={<WeaponBuilder />} />
+        <Route path="/loadout" element={<Loadout />} />
         <Route path="/browse" element={<Browse />} />
         <Route path="/profile" element={<Profile />} />
         <Route path="/login" element={<Login />} />

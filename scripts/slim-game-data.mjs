@@ -100,15 +100,77 @@ const slimArcanes = arcanes
     levelStats: a.levelStats,
   }));
 
+// Weapons: Primary, Secondary, Melee — only keep fields we use
+function slimWeapon(w) {
+  return {
+    uniqueName: w.uniqueName,
+    name: w.name,
+    description: w.description ?? '',
+    imageName: w.imageName,
+    category: w.category,
+    masteryReq: w.masteryReq ?? 0,
+    attacks: (w.attacks || []).map(a => ({
+      name: a.name,
+      speed: a.speed,
+      crit_chance: a.crit_chance,
+      crit_mult: a.crit_mult,
+      status_chance: a.status_chance,
+      damage: a.damage,
+      ...(a.shot_type ? { shot_type: a.shot_type } : {}),
+      ...(a.falloff ? { falloff: a.falloff } : {}),
+    })),
+    fireRate: w.fireRate,
+    ...(w.magazineSize != null ? { magazineSize: w.magazineSize } : {}),
+    ...(w.magazine != null ? { magazineSize: w.magazine } : {}),
+    ...(w.reloadTime != null ? { reloadTime: w.reloadTime } : {}),
+    ...(w.reload != null ? { reloadTime: w.reload } : {}),
+    totalDamage: w.totalDamage,
+    polarities: w.polarities || [],
+    isPrime: w.isPrime ?? false,
+    ...(w.noise ? { noise: w.noise } : {}),
+    ...(w.trigger ? { trigger: w.trigger } : {}),
+    ...(w.accuracy != null ? { accuracy: w.accuracy } : {}),
+    // Melee-specific
+    ...(w.stancePolarity ? { stancePolarity: w.stancePolarity } : {}),
+    ...(w.comboDuration != null ? { comboDuration: w.comboDuration } : {}),
+    ...(w.followThrough != null ? { followThrough: w.followThrough } : {}),
+    ...(w.range != null ? { range: w.range } : {}),
+    ...(w.slamAttack != null ? { slamAttack: w.slamAttack } : {}),
+    ...(w.heavySlamAttack != null ? { heavySlamAttack: w.heavySlamAttack } : {}),
+    ...(w.heavyAttack != null ? { heavyAttack: w.heavyAttack } : {}),
+    // Variant info
+    ...(w.vaulted != null ? { vaulted: w.vaulted } : {}),
+    ...(w.omegaAttenuation != null ? { omegaAttenuation: w.omegaAttenuation } : {}),
+  };
+}
+
+const primaryWeapons = JSON.parse(readFileSync(resolve(NODE_DATA, 'Primary.json'), 'utf-8'));
+const secondaryWeapons = JSON.parse(readFileSync(resolve(NODE_DATA, 'Secondary.json'), 'utf-8'));
+const meleeWeapons = JSON.parse(readFileSync(resolve(NODE_DATA, 'Melee.json'), 'utf-8'));
+
+const slimPrimary = primaryWeapons.map(slimWeapon);
+const slimSecondary = secondaryWeapons.map(slimWeapon);
+const slimMelee = meleeWeapons.map(slimWeapon);
+
 writeFileSync(resolve(SRC_DATA, 'Warframes.json'), JSON.stringify(slimWarframes));
 writeFileSync(resolve(SRC_DATA, 'Mods.json'), JSON.stringify(slimMods));
 writeFileSync(resolve(SRC_DATA, 'Arcanes.json'), JSON.stringify(slimArcanes));
+writeFileSync(resolve(SRC_DATA, 'Primary.json'), JSON.stringify(slimPrimary));
+writeFileSync(resolve(SRC_DATA, 'Secondary.json'), JSON.stringify(slimSecondary));
+writeFileSync(resolve(SRC_DATA, 'Melee.json'), JSON.stringify(slimMelee));
 
 console.log(`Warframes: ${warframes.length} -> ${slimWarframes.length} entries`);
 console.log(`Mods: ${mods.length} -> ${slimMods.length} entries`);
 console.log(`Arcanes: ${arcanes.length} -> ${slimArcanes.length} entries`);
-console.log(`Total size: ${((
+console.log(`Primary: ${primaryWeapons.length} -> ${slimPrimary.length} entries`);
+console.log(`Secondary: ${secondaryWeapons.length} -> ${slimSecondary.length} entries`);
+console.log(`Melee: ${meleeWeapons.length} -> ${slimMelee.length} entries`);
+const totalSize = (
   Buffer.byteLength(JSON.stringify(slimWarframes)) +
   Buffer.byteLength(JSON.stringify(slimMods)) +
-  Buffer.byteLength(JSON.stringify(slimArcanes))
-) / 1024 / 1024).toFixed(2)} MB`);
+  Buffer.byteLength(JSON.stringify(slimArcanes)) +
+  Buffer.byteLength(JSON.stringify(slimPrimary)) +
+  Buffer.byteLength(JSON.stringify(slimSecondary)) +
+  Buffer.byteLength(JSON.stringify(slimMelee))
+);
+console.log(`Total size: ${(totalSize / 1024 / 1024).toFixed(2)} MB`);
