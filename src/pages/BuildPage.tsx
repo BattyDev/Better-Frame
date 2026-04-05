@@ -10,6 +10,7 @@ import { useBuilderStore } from '../stores/builderStore';
 import { useWeaponBuilderStore } from '../stores/weaponBuilderStore';
 import { getWarframeByUniqueName, getItemImageUrl, getModByUniqueName, getArcaneByUniqueName } from '../data/warframeData';
 import { getWeaponByUniqueName } from '../data/weaponData';
+import { getArchwingByUniqueName, getCompanionByUniqueName, getNecramechByUniqueName } from '../data/equipmentData';
 import { calculateWarframeStats, formatStatValue, getStatDisplayName, type CalculatedStats } from '../lib/math/warframeCalc';
 import { calculateWeaponStats, formatWeaponStatValue, type WeaponCalculatedStats } from '../lib/math/weaponCalc';
 import { ELEMENT_COLORS, ELEMENT_DISPLAY_NAMES } from '../lib/math/elementCombiner';
@@ -20,17 +21,28 @@ import type { ModData, ArcaneData } from '../types/gameData';
 
 function useItemData(build: PublicBuild | null | undefined) {
   if (!build) return { name: '', imageUrl: null };
-  if (build.itemCategory === 'Warframe') {
-    const wf = getWarframeByUniqueName(build.itemUniqueName);
-    return {
-      name: wf?.name ?? build.itemUniqueName,
-      imageUrl: wf?.imageName ? getItemImageUrl(wf.imageName) : null,
-    };
+
+  let item: { name?: string; imageName?: string } | undefined;
+  switch (build.itemCategory) {
+    case 'Warframe':
+      item = getWarframeByUniqueName(build.itemUniqueName);
+      break;
+    case 'Archwing':
+      item = getArchwingByUniqueName(build.itemUniqueName);
+      break;
+    case 'Companion':
+      item = getCompanionByUniqueName(build.itemUniqueName);
+      break;
+    case 'Necramech':
+      item = getNecramechByUniqueName(build.itemUniqueName);
+      break;
+    default:
+      item = getWeaponByUniqueName(build.itemUniqueName);
   }
-  const weapon = getWeaponByUniqueName(build.itemUniqueName);
+
   return {
-    name: weapon?.name ?? build.itemUniqueName,
-    imageUrl: weapon?.imageName ? getItemImageUrl(weapon.imageName) : null,
+    name: item?.name ?? build.itemUniqueName,
+    imageUrl: item?.imageName ? getItemImageUrl(item.imageName) : null,
   };
 }
 

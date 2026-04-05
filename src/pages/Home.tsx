@@ -1,47 +1,56 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../stores/authStore';
+import { getItemImageUrl } from '../data/warframeData';
 
 const CATEGORY_CARDS = [
   {
     label: 'Warframes',
     description: 'Browse and create warframe builds with full stat calculations.',
     to: '/builds/warframe',
+    image: getItemImageUrl('excalibur-2621a69bfa.png'),
   },
   {
     label: 'Primary Weapons',
     description: 'Rifles, shotguns, bows, and more. Find your primary setup.',
     to: '/builds/primary',
+    image: getItemImageUrl('braton-3e4617eb07.png'),
   },
   {
     label: 'Secondary Weapons',
     description: 'Pistols, throwing weapons, and sidearms.',
     to: '/builds/secondary',
+    image: getItemImageUrl('lex-815d312d76.png'),
   },
   {
     label: 'Melee Weapons',
     description: 'Swords, polearms, heavy blades, and every other melee type.',
     to: '/builds/melee',
+    image: getItemImageUrl('skana-ea97e089d8.png'),
   },
   {
     label: 'Companions',
     description: 'Sentinels, kubrows, kavats, and their weapons.',
     to: '/builds/companion',
+    image: getItemImageUrl('carrier-f4e5806f6e.png'),
   },
   {
     label: 'Archwing',
     description: 'Archwing, arch-gun, and arch-melee builds.',
     to: '/builds/archwing',
+    image: getItemImageUrl('odonata-0425304f27.png'),
   },
   {
     label: 'Necramech',
     description: 'Voidrig and Bonewidow builds.',
     to: '/builds/necramech',
+    image: getItemImageUrl('voidrig-51bc3a4b3c.png'),
   },
   {
     label: 'Loadouts',
     description: 'Complete loadout setups with every slot filled.',
     to: '/loadout',
+    image: null,
   },
 ];
 
@@ -88,13 +97,24 @@ export function Home() {
             <Link
               key={card.to}
               to={card.to}
-              className="p-5 rounded-lg bg-wf-bg-card border border-wf-border
+              className="flex flex-col items-center p-5 rounded-lg bg-wf-bg-card border border-wf-border
                          hover:border-wf-gold-dim hover:bg-wf-bg-hover transition-colors group"
             >
+              {card.image ? (
+                <img
+                  src={card.image}
+                  alt={card.label}
+                  className="w-16 h-16 object-contain mb-3 group-hover:scale-110 transition-transform"
+                />
+              ) : (
+                <div className="w-16 h-16 mb-3 flex items-center justify-center text-2xl text-wf-text-muted">
+                  ⚔
+                </div>
+              )}
               <h3 className="text-sm font-semibold text-wf-gold mb-1 group-hover:text-wf-gold-light">
                 {card.label}
               </h3>
-              <p className="text-xs text-wf-text-dim">{card.description}</p>
+              <p className="text-xs text-wf-text-dim text-center">{card.description}</p>
             </Link>
           ))}
         </div>
