@@ -6,12 +6,27 @@
 -- Function runs as SECURITY DEFINER to bypass RLS
 create or replace function public.handle_new_user()
 returns trigger as $$
+declare
+  v_username text;
 begin
+  -- Try to get username from raw_user_meta_data
+  -- raw_user_meta_data is a JSONB field that contains metadata passed during signup
+  v_username := coalesce(
+    (new.raw_user_meta_data ->> 'username'),
+    (new.raw_user_meta_data::text ->> 'username'),
+    'user_' || left(new.id::text, 8)
+  );
+
+  -- Ensure username is never null or empty
+  if v_username is null or v_username = '' then
+    v_username := 'user_' || left(new.id::text, 8);
+  end if;
+
   insert into public.profiles (id, username, display_name)
   values (
     new.id,
-    coalesce(new.raw_user_meta_data ->> 'username', 'user_' || left(new.id::text, 8)),
-    coalesce(new.raw_user_meta_data ->> 'username', 'user_' || left(new.id::text, 8))
+    v_username,
+    v_username
   );
   return new;
 end;

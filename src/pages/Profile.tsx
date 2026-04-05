@@ -6,9 +6,11 @@ import { fetchMyBuilds, toggleBuildPublic } from '../lib/social';
 import { BuildCard } from '../components/social/BuildCard';
 
 export default function Profile() {
-  const { user, profile, signOut } = useAuthStore();
+  const { user, profile, signOut, resendConfirmation } = useAuthStore();
   const queryClient = useQueryClient();
   const [activeTab, setActiveTab] = useState<'builds' | 'account'>('builds');
+  const [resendLoading, setResendLoading] = useState(false);
+  const [resendMessage, setResendMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
 
   const { data: builds = [], isLoading } = useQuery({
     queryKey: ['myBuilds', user?.id],
@@ -23,6 +25,24 @@ export default function Profile() {
       queryClient.invalidateQueries({ queryKey: ['myBuilds', user?.id] });
     },
   });
+
+  const handleResendConfirmation = async () => {
+    if (!user?.email) return;
+    setResendLoading(true);
+    setResendMessage(null);
+
+    const { error } = await resendConfirmation(user.email);
+
+    if (error) {
+      setResendMessage({ type: 'error', text: error });
+    } else {
+      setResendMessage({
+        type: 'success',
+        text: 'Confirmation email sent! Check your inbox.',
+      });
+    }
+    setResendLoading(false);
+  };
 
   if (!user) {
     return <Navigate to="/login" replace />;
@@ -143,6 +163,9 @@ export default function Profile() {
             <div>
               <span className="text-wf-text-muted text-sm">Email</span>
               <p className="text-wf-text">{user.email}</p>
+              <p className="text-xs text-wf-text-muted mt-1">
+                {user.email_confirmed_at ? '✓ Confirmed' : '⚠ Unconfirmed'}
+              </p>
             </div>
             <div>
               <span className="text-wf-text-muted text-sm">Member since</span>
@@ -155,6 +178,33 @@ export default function Profile() {
               </p>
             </div>
           </div>
+
+          {!user.email_confirmed_at && (
+            <div className="bg-wf-warning/10 border border-wf-warning/30 rounded-lg p-4 space-y-3">
+              <p className="text-sm text-wf-text">
+                Your email address is not confirmed. Please check your inbox for a confirmation link.
+              </p>
+              <button
+                onClick={handleResendConfirmation}
+                disabled={resendLoading}
+                className="w-full px-4 py-2 bg-wf-gold text-wf-bg-dark rounded-lg hover:bg-wf-gold-light disabled:opacity-50 disabled:cursor-not-allowed transition-colors text-sm font-medium"
+              >
+                {resendLoading ? 'Sending...' : 'Resend Confirmation Email'}
+              </button>
+              {resendMessage && (
+                <p
+                  className={`text-sm ${
+                    resendMessage.type === 'success'
+                      ? 'text-wf-success'
+                      : 'text-wf-danger'
+                  }`}
+                >
+                  {resendMessage.text}
+                </p>
+              )}
+            </div>
+          )}
+
           <button
             onClick={signOut}
             className="px-4 py-2 bg-wf-danger/20 text-wf-danger border border-wf-danger/30 rounded-lg hover:bg-wf-danger/30 transition-colors"
