@@ -9,6 +9,7 @@ const navLinks = [
   { to: '/builder/melee', label: 'Melee' },
   { to: '/loadout', label: 'Loadout' },
   { to: '/browse', label: 'Browse' },
+  { to: '/compare', label: 'Compare' },
 ];
 
 export default function Navbar() {

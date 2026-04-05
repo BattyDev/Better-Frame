@@ -88,6 +88,86 @@ export function StatsPanel() {
           ))}
         </div>
       )}
+
+      {/* Set Bonuses */}
+      {stats.setBonuses.length > 0 && (
+        <div className="mt-3 pt-3 border-t border-wf-border">
+          <h4 className="text-xs font-medium text-wf-accent mb-2">Set Bonuses</h4>
+          {stats.setBonuses.map((setBonus) => (
+            <div key={setBonus.data.setKey} className="mb-2">
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-medium text-wf-text">
+                  {setBonus.data.name} Set
+                </span>
+                <span className="text-xs text-wf-text-dim">
+                  {setBonus.equippedCount}/{setBonus.data.tiers[setBonus.data.tiers.length - 1]?.count ?? 0}
+                </span>
+              </div>
+              {setBonus.activeTier && (
+                <p className="text-xs text-wf-success mt-0.5">
+                  {setBonus.activeTier.description}
+                </p>
+              )}
+              <div className="flex gap-0.5 mt-1">
+                {setBonus.data.tiers.map((tier) => (
+                  <div
+                    key={tier.count}
+                    className={`h-1 flex-1 rounded-full ${
+                      setBonus.equippedCount >= tier.count
+                        ? 'bg-wf-accent'
+                        : 'bg-wf-bg-light'
+                    }`}
+                  />
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* Conditional Buffs (Galvanized, etc.) */}
+      {stats.conditionalBuffs.length > 0 && (
+        <div className="mt-3 pt-3 border-t border-wf-border">
+          <h4 className="text-xs font-medium text-wf-warning mb-2">Conditional Buffs</h4>
+          {stats.conditionalBuffs.map((buff, i) => (
+            <div key={i} className="mb-2 p-2 rounded bg-wf-bg-light">
+              <div className="text-xs font-medium text-wf-text">{buff.modName}</div>
+              <div className="text-xs text-wf-warning mt-0.5">{buff.trigger}</div>
+              <div className="text-xs text-wf-text-dim mt-0.5">
+                {buff.perStack}
+                {buff.maxStacks > 1 && (
+                  <span className="text-wf-text-muted"> (up to {buff.maxStacks}x)</span>
+                )}
+              </div>
+              {buff.duration > 0 && (
+                <div className="text-xs text-wf-text-muted">{buff.duration}s duration</div>
+              )}
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* Arcane Effects */}
+      {stats.arcaneEffects.length > 0 && (
+        <div className="mt-3 pt-3 border-t border-wf-border">
+          <h4 className="text-xs font-medium text-wf-gold mb-2">Arcane Effects</h4>
+          {stats.arcaneEffects.map((effect, i) => (
+            <div key={i} className="mb-2 p-2 rounded bg-wf-bg-light">
+              <div className="text-xs font-medium text-wf-text">{effect.arcaneName}</div>
+              <div className="text-xs text-wf-gold mt-0.5">{effect.trigger}</div>
+              {effect.chance !== null && (
+                <div className="text-xs text-wf-text-muted">{effect.chance}% chance</div>
+              )}
+              {effect.effects.map((eff, j) => (
+                <div key={j} className="text-xs text-wf-success mt-0.5">{eff}</div>
+              ))}
+              {effect.duration !== null && (
+                <div className="text-xs text-wf-text-muted">{effect.duration}s duration</div>
+              )}
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 }

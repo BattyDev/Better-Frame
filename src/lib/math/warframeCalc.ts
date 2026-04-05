@@ -1,8 +1,11 @@
 // Warframe stat calculator: applies mod effects to base warframe stats
-import type { WarframeData, ModData, StatModifier } from '../../types/gameData';
+import type { WarframeData, ModData, ArcaneData, StatModifier } from '../../types/gameData';
 import type { StatKey } from './statRegistry';
 import { STAT_DISPLAY_NAMES } from './statRegistry';
 import { parseModStats } from './modParser';
+import { detectSetBonuses, type ActiveSetBonus } from '../../data/setBonus';
+import { parseConditionalBuffs, type ConditionalBuff } from './conditionalBuffs';
+import { parseArcaneEffects, type ArcaneEffect } from './arcaneParser';
 
 // Base stats that come from the warframe itself
 export interface WarframeBaseStats {
@@ -23,6 +26,12 @@ export interface CalculatedStats {
   modded: Record<string, number>;
   // Text-only effects that can't be calculated
   textEffects: string[];
+  // Set bonuses from equipped mods
+  setBonuses: ActiveSetBonus[];
+  // Conditional buffs (Galvanized stacking, On Kill, etc.)
+  conditionalBuffs: ConditionalBuff[];
+  // Arcane proc effects
+  arcaneEffects: ArcaneEffect[];
 }
 
 /**
@@ -66,15 +75,24 @@ const MULTIPLICATIVE_STATS: StatKey[] = [
 export function calculateWarframeStats(
   warframe: WarframeData,
   mods: { mod: ModData; rank: number }[],
+  arcanes?: { arcane: ArcaneData; rank: number }[],
 ): CalculatedStats {
   const baseStats = getWarframeBaseStats(warframe);
 
   // Collect all stat modifiers from all mods
   const allModifiers: StatModifier[] = [];
   const textEffects: string[] = [];
+  const conditionalBuffs: ConditionalBuff[] = [];
 
   for (const { mod, rank } of mods) {
     const modStats = parseModStats(mod, rank);
+
+    // Check for conditional buffs (Galvanized mods, etc.)
+    const condBuffs = parseConditionalBuffs(mod, rank);
+    if (condBuffs.length > 0) {
+      conditionalBuffs.push(...condBuffs);
+    }
+
     for (const modifier of modStats) {
       if (modifier.stat === 'unknown') {
         textEffects.push(modifier.rawText);
@@ -84,11 +102,37 @@ export function calculateWarframeStats(
     }
   }
 
+  // Detect set bonuses from equipped mods
+  const modsForSetDetection = mods.map(({ mod }) => ({
+    modSet: mod.modSet,
+    name: mod.name,
+  }));
+  const setBonuses = detectSetBonuses(modsForSetDetection);
+
   // Group modifiers by stat
   const modifiersByStat = new Map<string, number>();
   for (const mod of allModifiers) {
     const current = modifiersByStat.get(mod.stat) ?? 0;
     modifiersByStat.set(mod.stat, current + mod.value);
+  }
+
+  // Apply Umbral/Sacrificial set bonus multipliers
+  for (const setBonus of setBonuses) {
+    if (!setBonus.activeTier?.statBonus) continue;
+    const { stat, value } = setBonus.activeTier.statBonus;
+    if (stat !== 'umbralSetMultiplier' && stat !== 'sacrificialSetMultiplier') continue;
+
+    const setPrefix = setBonus.data.setKey;
+    for (const { mod, rank } of mods) {
+      if (!mod.modSet?.includes(`/Sets/${setPrefix}/`)) continue;
+      const modStats = parseModStats(mod, rank);
+      for (const modifier of modStats) {
+        if (modifier.stat !== 'unknown') {
+          const current = modifiersByStat.get(modifier.stat) ?? 0;
+          modifiersByStat.set(modifier.stat, current + modifier.value * value);
+        }
+      }
+    }
   }
 
   // Calculate modded stats
@@ -126,7 +170,16 @@ export function calculateWarframeStats(
     }
   }
 
-  return { base, modded, textEffects };
+  // Parse arcane effects
+  const arcaneEffects: ArcaneEffect[] = [];
+  if (arcanes) {
+    for (const { arcane, rank } of arcanes) {
+      const effects = parseArcaneEffects(arcane, rank);
+      arcaneEffects.push(...effects);
+    }
+  }
+
+  return { base, modded, textEffects, setBonuses, conditionalBuffs, arcaneEffects };
 }
 
 /**

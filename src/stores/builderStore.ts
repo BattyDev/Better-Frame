@@ -121,6 +121,9 @@ const EMPTY_STATS: CalculatedStats = {
   base: {},
   modded: {},
   textEffects: [],
+  setBonuses: [],
+  conditionalBuffs: [],
+  arcaneEffects: [],
 };
 
 function createInitialState(): BuilderState {
@@ -177,7 +180,12 @@ function recalculate(state: BuilderState): Pick<BuilderState, 'capacity' | 'stat
     if (entry) allMods.push({ mod: entry.mod, rank: entry.rank });
   }
 
-  const stats = calculateWarframeStats(state.warframe, allMods);
+  // Build arcanes list for arcane effect parsing
+  const arcaneEntries = state.arcanes
+    .filter((e): e is NonNullable<typeof e> => e !== null)
+    .map(e => ({ arcane: e.arcane, rank: e.rank }));
+
+  const stats = calculateWarframeStats(state.warframe, allMods, arcaneEntries);
 
   return { capacity, stats };
 }

@@ -29,9 +29,46 @@ export function HelminthSelector() {
 
   if (!warframe) return null;
 
+  // Show warframe's 4 abilities — ability 3 (index 2) is the default Helminth target
+  const abilities = warframe.abilities ?? [];
+
   return (
     <div className="space-y-2">
       <h3 className="text-sm font-medium text-wf-text-dim">Helminth</h3>
+
+      {/* Warframe ability list with replaceable indicators */}
+      {abilities.length > 0 && (
+        <div className="space-y-1">
+          {abilities.map((ability, i) => {
+            const isReplaced = helminthAbility !== null && i === 2; // Default: replaces ability 3
+            return (
+              <div
+                key={ability.name}
+                className={`flex items-center gap-2 px-2 py-1.5 rounded text-xs ${
+                  isReplaced
+                    ? 'bg-wf-bg-light border border-wf-warning/30'
+                    : 'bg-wf-bg-card border border-transparent'
+                }`}
+              >
+                <span className="w-4 text-center text-wf-text-muted">{i + 1}</span>
+                <span className={`flex-1 ${isReplaced ? 'line-through text-wf-text-muted' : 'text-wf-text'}`}>
+                  {ability.name}
+                </span>
+                {i === 2 && !helminthAbility && (
+                  <span className="text-[10px] text-wf-gold-dim px-1 rounded bg-wf-gold/10">
+                    Replaceable
+                  </span>
+                )}
+                {isReplaced && (
+                  <span className="text-[10px] text-wf-warning px-1 rounded bg-wf-warning/10">
+                    Replaced
+                  </span>
+                )}
+              </div>
+            );
+          })}
+        </div>
+      )}
 
       {helminthAbility ? (
         <div className="flex items-center gap-2 p-2 rounded-lg border border-wf-border bg-wf-bg-card">

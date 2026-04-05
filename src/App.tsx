@@ -24,6 +24,7 @@ import Profile from './pages/Profile';
 import BuildPage from './pages/BuildPage';
 import UserProfile from './pages/UserProfile';
 import Admin from './pages/Admin';
+import Compare from './pages/Compare';
 import Login from './pages/Login';
 import SignUp from './pages/SignUp';
 
@@ -55,6 +56,7 @@ function AppContent() {
         <Route path="/loadout/:id" element={<LoadoutPage />} />
         <Route path="/browse" element={<Browse />} />
         <Route path="/build/:id" element={<BuildPage />} />
+        <Route path="/compare" element={<Compare />} />
         <Route path="/user/:username" element={<UserProfile />} />
         <Route path="/profile" element={<Profile />} />
         <Route path="/admin" element={<Admin />} />
