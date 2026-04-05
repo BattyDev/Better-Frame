@@ -135,21 +135,26 @@ export const useAuthStore = create<AuthState>((set, get) => ({
       return { error: 'Not authenticated' };
     }
 
-    const { error: dbError } = await supabase
+    const { data, error: dbError } = await supabase
       .from('profiles')
       .update(updates)
-      .eq('id', state.user.id);
+      .eq('id', state.user.id)
+      .select()
+      .single();
 
     if (dbError) {
       return { error: dbError.message };
     }
 
-    // Update the local profile in the store with the changes
+    if (!data) {
+      return { error: 'Failed to update profile' };
+    }
+
     if (state.profile) {
       set({
         profile: {
           ...state.profile,
-          ...updates,
+          ...data,
         },
       });
     }
