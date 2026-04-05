@@ -98,7 +98,8 @@ create policy "builds_insert_own"
 
 create policy "builds_update_own"
   on builds for update
-  using (auth.uid() = user_id);
+  using (auth.uid() = user_id)
+  with check (auth.uid() = user_id);
 
 create policy "builds_delete_own"
   on builds for delete
@@ -115,7 +116,8 @@ create policy "loadouts_insert_own"
 
 create policy "loadouts_update_own"
   on loadouts for update
-  using (auth.uid() = user_id);
+  using (auth.uid() = user_id)
+  with check (auth.uid() = user_id);
 
 create policy "loadouts_delete_own"
   on loadouts for delete

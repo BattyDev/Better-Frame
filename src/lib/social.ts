@@ -24,7 +24,7 @@ export interface BrowseOptions {
 }
 
 function toPublicBuildSummary(row: Record<string, unknown>): PublicBuildSummary {
-  const profiles = row.profiles as { id: string; username: string; display_name: string | null } | null;
+  const profiles = row.profiles as { id: string; username: string } | null;
   return {
     id: row.id as string,
     name: row.name as string,
@@ -41,7 +41,6 @@ function toPublicBuildSummary(row: Record<string, unknown>): PublicBuildSummary 
     author: {
       id: profiles?.id ?? (row.user_id as string),
       username: profiles?.username ?? 'Unknown',
-      displayName: profiles?.display_name ?? null,
     },
   };
 }
@@ -54,7 +53,7 @@ export async function fetchPublicBuilds(options: BrowseOptions = {}): Promise<{
 
   let query = supabase
     .from('builds')
-    .select('*, profiles!user_id(id, username, display_name)', { count: 'exact' })
+    .select('*, profiles!user_id(id, username)', { count: 'exact' })
     .eq('is_public', true);
 
   if (category !== 'all') {
@@ -92,7 +91,7 @@ export async function fetchPublicBuilds(options: BrowseOptions = {}): Promise<{
 export async function fetchBuildById(id: string): Promise<PublicBuild | null> {
   const { data, error } = await supabase
     .from('builds')
-    .select('*, profiles!user_id(id, username, display_name)')
+    .select('*, profiles!user_id(id, username)')
     .eq('id', id)
     .single();
 
@@ -105,7 +104,7 @@ export async function fetchBuildById(id: string): Promise<PublicBuild | null> {
 export async function fetchUserPublicBuilds(userId: string): Promise<PublicBuildSummary[]> {
   const { data, error } = await supabase
     .from('builds')
-    .select('*, profiles!user_id(id, username, display_name)')
+    .select('*, profiles!user_id(id, username)')
     .eq('user_id', userId)
     .eq('is_public', true)
     .order('created_at', { ascending: false });
@@ -117,7 +116,7 @@ export async function fetchUserPublicBuilds(userId: string): Promise<PublicBuild
 export async function fetchMyBuilds(userId: string): Promise<PublicBuildSummary[]> {
   const { data, error } = await supabase
     .from('builds')
-    .select('*, profiles!user_id(id, username, display_name)')
+    .select('*, profiles!user_id(id, username)')
     .eq('user_id', userId)
     .order('created_at', { ascending: false });
 
@@ -127,10 +126,10 @@ export async function fetchMyBuilds(userId: string): Promise<PublicBuildSummary[
 
 export async function fetchProfileByUsername(
   username: string,
-): Promise<{ id: string; username: string; displayName: string | null; createdAt: string } | null> {
+): Promise<{ id: string; username: string; createdAt: string } | null> {
   const { data, error } = await supabase
     .from('profiles')
-    .select('id, username, display_name, created_at')
+    .select('id, username, created_at')
     .eq('username', username)
     .single();
 
@@ -138,7 +137,6 @@ export async function fetchProfileByUsername(
   return {
     id: data.id as string,
     username: data.username as string,
-    displayName: data.display_name as string | null,
     createdAt: data.created_at as string,
   };
 }
@@ -214,15 +212,15 @@ export async function cloneBuild(buildId: string, userId: string): Promise<strin
 
 // ─── Loadout (public view) ─────────────────────────────────────────────────
 
-export async function fetchLoadoutById(id: string): Promise<(Loadout & { author: { id: string; username: string; displayName: string | null } }) | null> {
+export async function fetchLoadoutById(id: string): Promise<(Loadout & { author: { id: string; username: string } }) | null> {
   const { data, error } = await supabase
     .from('loadouts')
-    .select('*, profiles!user_id(id, username, display_name)')
+    .select('*, profiles!user_id(id, username)')
     .eq('id', id)
     .single();
 
   if (error || !data) return null;
-  const profiles = (data as Record<string, unknown>).profiles as { id: string; username: string; display_name: string | null } | null;
+  const profiles = (data as Record<string, unknown>).profiles as { id: string; username: string } | null;
 
   return {
     id: data.id,
@@ -251,7 +249,6 @@ export async function fetchLoadoutById(id: string): Promise<(Loadout & { author:
     author: {
       id: profiles?.id ?? data.user_id,
       username: profiles?.username ?? 'Unknown',
-      displayName: profiles?.display_name ?? null,
     },
   };
 }
@@ -277,7 +274,7 @@ export async function fetchBuildSummariesByIds(ids: string[]): Promise<Record<st
 // ─── Comments ──────────────────────────────────────────────────────────────
 
 function toComment(row: Record<string, unknown>): Comment {
-  const profiles = row.profiles as { id: string; username: string; display_name: string | null } | null;
+  const profiles = row.profiles as { id: string; username: string } | null;
   return {
     id: row.id as string,
     userId: row.user_id as string,
@@ -291,7 +288,6 @@ function toComment(row: Record<string, unknown>): Comment {
     author: {
       id: profiles?.id ?? (row.user_id as string),
       username: profiles?.username ?? 'Unknown',
-      displayName: profiles?.display_name ?? null,
     },
   };
 }
@@ -302,7 +298,7 @@ export async function fetchComments(
 ): Promise<Comment[]> {
   const { data, error } = await supabase
     .from('comments')
-    .select('*, profiles!user_id(id, username, display_name)')
+    .select('*, profiles!user_id(id, username)')
     .eq('target_id', targetId)
     .eq('target_type', targetType)
     .eq('is_hidden', false)
@@ -335,7 +331,7 @@ export async function addComment(
       body: body.trim(),
       parent_comment_id: parentCommentId,
     })
-    .select('*, profiles!user_id(id, username, display_name)')
+    .select('*, profiles!user_id(id, username)')
     .single();
 
   if (error) throw error;

@@ -1,4 +1,4 @@
-// Core domain types for Better Frame
+// Core domain types for Tenno Trove
 
 export interface UserProfile {
   id: string;
@@ -132,7 +132,6 @@ export interface PublicBuildSummary {
   author: {
     id: string;
     username: string;
-    displayName: string | null;
   };
 }
 
@@ -160,7 +159,6 @@ export interface Comment {
   author: {
     id: string;
     username: string;
-    displayName: string | null;
   };
   replies?: Comment[];
 }

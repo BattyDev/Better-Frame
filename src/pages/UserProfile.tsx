@@ -49,16 +49,13 @@ export default function UserProfile() {
         {/* Avatar placeholder */}
         <div className="w-16 h-16 rounded-full bg-wf-bg-hover border border-wf-border flex items-center justify-center flex-shrink-0">
           <span className="text-wf-gold text-2xl font-bold">
-            {(profile.displayName ?? profile.username).charAt(0).toUpperCase()}
+            {profile.username.charAt(0).toUpperCase()}
           </span>
         </div>
         <div>
           <h1 className="text-xl font-bold text-wf-gold">
-            {profile.displayName ?? profile.username}
+            {profile.username}
           </h1>
-          {profile.displayName && (
-            <p className="text-sm text-wf-text-muted">@{profile.username}</p>
-          )}
           <p className="text-xs text-wf-text-muted mt-1">Member since {memberSince}</p>
         </div>
       </div>

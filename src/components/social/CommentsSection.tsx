@@ -37,7 +37,7 @@ function CommentItem({ comment, targetId, targetType, depth = 0 }: CommentItemPr
       <div className="py-3">
         <div className="flex items-center gap-2 mb-1.5">
           <span className="text-sm font-medium text-wf-text">
-            {comment.author.displayName ?? comment.author.username}
+            {comment.author.username}
           </span>
           <span className="text-xs text-wf-text-muted">{date}</span>
           <ReportButton targetType="comment" targetId={comment.id} />
