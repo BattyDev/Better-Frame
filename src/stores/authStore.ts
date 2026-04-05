@@ -67,24 +67,17 @@ export const useAuthStore = create<AuthState>((set) => ({
 
   signUp: async (email, password, username) => {
     set({ loading: true });
-    const { data, error } = await supabase.auth.signUp({ email, password });
+    const { error } = await supabase.auth.signUp({
+      email,
+      password,
+      options: {
+        data: { username },
+      },
+    });
 
     if (error) {
       set({ loading: false });
       return { error: error.message };
-    }
-
-    if (data.user) {
-      const { error: profileError } = await supabase.from('profiles').insert({
-        id: data.user.id,
-        username,
-        display_name: username,
-      });
-
-      if (profileError) {
-        set({ loading: false });
-        return { error: profileError.message };
-      }
     }
 
     set({ loading: false });
