@@ -3,6 +3,16 @@ import type { User, Session } from '@supabase/supabase-js';
 import { supabase } from '../lib/supabase';
 import type { UserProfile } from '../types';
 
+function getEmailRedirectTo(): string | undefined {
+  const configuredSiteUrl = import.meta.env.VITE_SITE_URL as string | undefined;
+  const baseUrl = configuredSiteUrl || (typeof window !== 'undefined' ? window.location.origin : undefined);
+
+  if (!baseUrl) return undefined;
+
+  const normalizedBaseUrl = baseUrl.endsWith('/') ? baseUrl.slice(0, -1) : baseUrl;
+  return `${normalizedBaseUrl}/login`;
+}
+
 interface AuthState {
   user: User | null;
   session: Session | null;
@@ -67,11 +77,14 @@ export const useAuthStore = create<AuthState>((set) => ({
 
   signUp: async (email, password, username) => {
     set({ loading: true });
+    const emailRedirectTo = getEmailRedirectTo();
+
     const { error } = await supabase.auth.signUp({
       email,
       password,
       options: {
         data: { username },
+        emailRedirectTo,
       },
     });
 
