@@ -63,6 +63,7 @@ export interface Loadout {
   companionWeaponBuildId: string | null;
   necramechBuildId: string | null;
   parazonBuildId: string | null;
+  kdriveBuildId: string | null;
   focusSchool: FocusSchool | null;
   isPublic: boolean;
   voteScore: number;

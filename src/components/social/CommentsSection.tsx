@@ -3,6 +3,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useAuthStore } from '../../stores/authStore';
 import { fetchComments, addComment } from '../../lib/social';
 import { ReportButton } from './ReportButton';
+import { Markdown } from '../ui/Markdown';
 import type { Comment } from '../../types';
 
 interface CommentItemProps {
@@ -43,7 +44,7 @@ function CommentItem({ comment, targetId, targetType, depth = 0 }: CommentItemPr
           <span className="text-xs text-wf-text-muted">{date}</span>
           <ReportButton targetType="comment" targetId={comment.id} />
         </div>
-        <p className="text-sm text-wf-text-dim whitespace-pre-wrap">{comment.body}</p>
+        <Markdown text={comment.body} className="text-sm text-wf-text-dim" />
         {user && depth === 0 && (
           <button
             onClick={() => setReplyOpen((v) => !v)}

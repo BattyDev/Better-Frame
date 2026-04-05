@@ -37,8 +37,8 @@ for (const item of archMeleeItems) archMeleeByUniqueName.set(item.uniqueName, it
 for (const item of [...petsItems, ...sentinelItems]) companionByUniqueName.set(item.uniqueName, item);
 for (const item of sentinelWeaponItems) sentinelWeaponByUniqueName.set(item.uniqueName, item);
 
-// Necramechs are in Warframes.json with productCategory === 'MechSuits'
-const necramechItems = allWarframeItems.filter(w => (w as any).productCategory === 'MechSuits');
+// Necramechs are in Warframes.json — identified by their uniqueName path containing 'EntratiMech'
+const necramechItems = allWarframeItems.filter(w => w.uniqueName.includes('/EntratiMech/'));
 for (const item of necramechItems) necramechByUniqueName.set(item.uniqueName, item as WarframeData);
 
 // ---- Archwing ----
@@ -203,6 +203,28 @@ export function getNecramechMods(necramechName?: string): ModData[] {
 
 export function getParazonMods(): ModData[] {
   return getAllMods().filter(m => m.type === 'Parazon Mod');
+}
+
+// ---- K-Drives ----
+// warframe-items stores K-Drive parts in Misc.json as deck/engine/nose/jet components.
+// For modding purposes, the board itself doesn't affect stats — only mods matter.
+// We provide pre-built boards (one per deck component) as selectable items.
+
+interface KDriveItem {
+  uniqueName: string;
+  name: string;
+  imageName: string;
+}
+
+const KDRIVE_BOARDS: KDriveItem[] = [
+  { uniqueName: '/Lotus/Types/Vehicles/Hoverboard/HoverboardSuitA', name: 'Bondi K-Drive', imageName: 'k-drive.png' },
+  { uniqueName: '/Lotus/Types/Vehicles/Hoverboard/HoverboardSuitB', name: 'Needlenose K-Drive', imageName: 'k-drive.png' },
+  { uniqueName: '/Lotus/Types/Vehicles/Hoverboard/HoverboardSuitC', name: 'Biz K-Drive', imageName: 'k-drive.png' },
+  { uniqueName: '/Lotus/Types/Vehicles/Hoverboard/HoverboardSuitD', name: 'Feverspine K-Drive', imageName: 'k-drive.png' },
+];
+
+export function getAllKDrives(): KDriveItem[] {
+  return KDRIVE_BOARDS;
 }
 
 export function getKDriveMods(): ModData[] {

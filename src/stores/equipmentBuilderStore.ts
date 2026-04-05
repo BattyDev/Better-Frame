@@ -16,7 +16,8 @@ export type EquipmentCategory =
   | 'Companion'
   | 'CompanionWeapon'
   | 'Necramech'
-  | 'Parazon';
+  | 'Parazon'
+  | 'KDrive';
 
 /** How many regular mod slots each equipment type gets */
 export const EQUIPMENT_SLOT_COUNT: Record<EquipmentCategory, number> = {
@@ -25,6 +26,7 @@ export const EQUIPMENT_SLOT_COUNT: Record<EquipmentCategory, number> = {
   CompanionWeapon: 8,
   Necramech: 8,
   Parazon: 3,
+  KDrive: 3,
 };
 
 /** Whether a category uses a Reactor (frame) or Catalyst (weapon) for capacity doubling */
@@ -34,6 +36,7 @@ export const EQUIPMENT_USES_REACTOR: Record<EquipmentCategory, boolean> = {
   CompanionWeapon: false,
   Necramech: true,
   Parazon: false,
+  KDrive: false,
 };
 
 export interface SlottedModEntry {

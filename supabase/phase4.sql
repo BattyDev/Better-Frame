@@ -11,7 +11,9 @@ alter table loadouts
   add column if not exists companion_build_id         uuid references builds(id) on delete set null,
   add column if not exists companion_weapon_build_id  uuid references builds(id) on delete set null,
   add column if not exists necramech_build_id         uuid references builds(id) on delete set null,
-  add column if not exists parazon_build_id           uuid references builds(id) on delete set null;
+  add column if not exists parazon_build_id           uuid references builds(id) on delete set null,
+  add column if not exists kdrive_build_id            uuid references builds(id) on delete set null,
+  add column if not exists focus_school               text check (focus_school in ('Madurai','Vazarin','Naramon','Zenurik','Unairu'));
 
 -- ─── Indexes for fast joins on new FK columns ────────────────────────────────
 
@@ -22,6 +24,7 @@ create index if not exists loadouts_companion_build_idx       on loadouts(compan
 create index if not exists loadouts_companion_weapon_build_idx on loadouts(companion_weapon_build_id) where companion_weapon_build_id is not null;
 create index if not exists loadouts_necramech_build_idx       on loadouts(necramech_build_id)       where necramech_build_id is not null;
 create index if not exists loadouts_parazon_build_idx         on loadouts(parazon_build_id)         where parazon_build_id is not null;
+create index if not exists loadouts_kdrive_build_idx          on loadouts(kdrive_build_id)          where kdrive_build_id is not null;
 
 -- ─── RLS: allow loadouts to be read publicly (if is_public = true) ───────────
 -- (Only add if this was not already created in a prior migration)

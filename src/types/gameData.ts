@@ -140,7 +140,8 @@ export type EquipmentCategory =
   | 'Companion'
   | 'CompanionWeapon'
   | 'Necramech'
-  | 'Parazon';
+  | 'Parazon'
+  | 'KDrive';
 
 export type DamageType =
   | 'impact' | 'puncture' | 'slash'

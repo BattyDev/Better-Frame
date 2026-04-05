@@ -2,6 +2,7 @@ import { useEffect, useCallback } from 'react';
 import { useAuthStore } from '../stores/authStore';
 import { useLoadoutStore, type LoadoutBuildSummary } from '../stores/loadoutStore';
 import type { FocusSchool } from '../types';
+import { getFocusSchoolData } from '../data/focusSchools';
 
 const SLOT_CONFIG = [
   // Combat
@@ -20,6 +21,7 @@ const SLOT_CONFIG = [
   // Other
   { key: 'necramechBuildId' as const, label: 'Necramech', category: 'Necramech', group: 'Other' },
   { key: 'parazonBuildId' as const, label: 'Parazon', category: 'Parazon', group: 'Other' },
+  { key: 'kdriveBuildId' as const, label: 'K-Drive', category: 'KDrive', group: 'Other' },
 ] as const;
 
 const FOCUS_SCHOOLS: FocusSchool[] = ['Madurai', 'Vazarin', 'Naramon', 'Zenurik', 'Unairu'];
@@ -158,6 +160,51 @@ export default function Loadout() {
             </button>
           ))}
         </div>
+
+        {/* Ability tree for selected school */}
+        {focusSchool && <FocusSchoolAbilities school={focusSchool} />}
+      </div>
+    </div>
+  );
+}
+
+function FocusSchoolAbilities({ school }: { school: FocusSchool }) {
+  const data = getFocusSchoolData(school);
+  return (
+    <div className="mt-3 p-4 rounded-lg bg-wf-bg-card border border-wf-border space-y-3">
+      <div>
+        <h3 className="text-sm font-medium text-wf-gold">{data.name}</h3>
+        <p className="text-xs text-wf-text-muted">{data.description}</p>
+      </div>
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+        {data.abilities.map((ability) => (
+          <div
+            key={ability.name}
+            className="p-2 rounded bg-wf-bg border border-wf-border"
+          >
+            <div className="flex items-center gap-2 mb-1">
+              <span className="text-xs font-medium text-wf-text">{ability.name}</span>
+              <span className={`text-[10px] px-1.5 py-0.5 rounded ${
+                ability.isPassive
+                  ? 'bg-wf-accent/10 text-wf-accent'
+                  : 'bg-wf-blue/10 text-wf-blue'
+              }`}>
+                {ability.isPassive ? 'Passive' : 'Active'}
+              </span>
+            </div>
+            <p className="text-xs text-wf-text-dim mb-1">{ability.description}</p>
+            {ability.statBonuses && ability.statBonuses.length > 0 && (
+              <div className="space-y-0.5">
+                {ability.statBonuses.map((bonus) => (
+                  <div key={bonus.stat} className="flex justify-between text-[10px]">
+                    <span className="text-wf-text-muted">{bonus.stat}</span>
+                    <span className="text-wf-gold">{bonus.value}</span>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        ))}
       </div>
     </div>
   );

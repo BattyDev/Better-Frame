@@ -6,6 +6,7 @@ import type {
   Comment,
   ReportReason,
   ItemCategory,
+  Loadout,
 } from '../types';
 
 // ─── Browse ────────────────────────────────────────────────────────────────
@@ -18,6 +19,8 @@ export interface BrowseOptions {
   sort?: SortOption;
   page?: number;
   pageSize?: number;
+  maxForma?: number;
+  hasReactor?: boolean;
 }
 
 function toPublicBuildSummary(row: Record<string, unknown>): PublicBuildSummary {
@@ -47,7 +50,7 @@ export async function fetchPublicBuilds(options: BrowseOptions = {}): Promise<{
   builds: PublicBuildSummary[];
   total: number;
 }> {
-  const { category = 'all', search = '', sort = 'newest', page = 0, pageSize = 20 } = options;
+  const { category = 'all', search = '', sort = 'newest', page = 0, pageSize = 20, maxForma, hasReactor } = options;
 
   let query = supabase
     .from('builds')
@@ -59,6 +62,12 @@ export async function fetchPublicBuilds(options: BrowseOptions = {}): Promise<{
   }
   if (search) {
     query = query.ilike('name', `%${search}%`);
+  }
+  if (maxForma !== undefined) {
+    query = query.lte('config->formaCount', maxForma);
+  }
+  if (hasReactor !== undefined) {
+    query = query.eq('config->hasReactor', hasReactor);
   }
 
   if (sort === 'newest') {
@@ -203,6 +212,68 @@ export async function cloneBuild(buildId: string, userId: string): Promise<strin
   return (data as { id: string }).id;
 }
 
+// ─── Loadout (public view) ─────────────────────────────────────────────────
+
+export async function fetchLoadoutById(id: string): Promise<(Loadout & { author: { id: string; username: string; displayName: string | null } }) | null> {
+  const { data, error } = await supabase
+    .from('loadouts')
+    .select('*, profiles!user_id(id, username, display_name)')
+    .eq('id', id)
+    .single();
+
+  if (error || !data) return null;
+  const profiles = (data as Record<string, unknown>).profiles as { id: string; username: string; display_name: string | null } | null;
+
+  return {
+    id: data.id,
+    userId: data.user_id,
+    name: data.name,
+    description: data.description ?? null,
+    warframeBuildId: data.warframe_build_id,
+    primaryBuildId: data.primary_build_id,
+    secondaryBuildId: data.secondary_build_id,
+    meleeBuildId: data.melee_build_id,
+    exaltedBuildId: data.exalted_build_id,
+    archwingBuildId: data.archwing_build_id ?? null,
+    archgunBuildId: data.archgun_build_id ?? null,
+    archmeleeBuildId: data.archmelee_build_id ?? null,
+    companionBuildId: data.companion_build_id ?? null,
+    companionWeaponBuildId: data.companion_weapon_build_id ?? null,
+    necramechBuildId: data.necramech_build_id ?? null,
+    parazonBuildId: data.parazon_build_id ?? null,
+    kdriveBuildId: data.kdrive_build_id ?? null,
+    focusSchool: data.focus_school ?? null,
+    isPublic: data.is_public,
+    voteScore: data.vote_score ?? 0,
+    gameVersion: data.game_version ?? null,
+    createdAt: data.created_at,
+    updatedAt: data.updated_at,
+    author: {
+      id: profiles?.id ?? data.user_id,
+      username: profiles?.username ?? 'Unknown',
+      displayName: profiles?.display_name ?? null,
+    },
+  };
+}
+
+export async function fetchBuildSummariesByIds(ids: string[]): Promise<Record<string, { id: string; name: string; itemCategory: string; itemUniqueName: string }>> {
+  const validIds = ids.filter(Boolean);
+  if (validIds.length === 0) return {};
+
+  const { data, error } = await supabase
+    .from('builds')
+    .select('id, name, item_category, item_unique_name')
+    .in('id', validIds);
+
+  if (error || !data) return {};
+
+  const map: Record<string, { id: string; name: string; itemCategory: string; itemUniqueName: string }> = {};
+  for (const b of data) {
+    map[b.id] = { id: b.id, name: b.name, itemCategory: b.item_category, itemUniqueName: b.item_unique_name };
+  }
+  return map;
+}
+
 // ─── Comments ──────────────────────────────────────────────────────────────
 
 function toComment(row: Record<string, unknown>): Comment {
@@ -277,6 +348,62 @@ export async function deleteComment(commentId: string): Promise<void> {
 }
 
 // ─── Reports ───────────────────────────────────────────────────────────────
+
+// ─── Admin / Moderation ───────────────────────────────────────────────────
+
+export interface AdminReport {
+  id: string;
+  reporterId: string | null;
+  targetType: 'build' | 'loadout' | 'comment';
+  targetId: string;
+  reason: ReportReason;
+  notes: string | null;
+  status: 'pending' | 'reviewed' | 'dismissed';
+  createdAt: string;
+}
+
+export async function fetchPendingReports(): Promise<AdminReport[]> {
+  const { data, error } = await supabase
+    .from('reports')
+    .select('*')
+    .order('created_at', { ascending: false });
+
+  if (error) throw error;
+  return (data ?? []).map((r: Record<string, unknown>) => ({
+    id: r.id as string,
+    reporterId: r.reporter_id as string | null,
+    targetType: r.target_type as AdminReport['targetType'],
+    targetId: r.target_id as string,
+    reason: r.reason as ReportReason,
+    notes: r.notes as string | null,
+    status: r.status as AdminReport['status'],
+    createdAt: r.created_at as string,
+  }));
+}
+
+export async function updateReportStatus(reportId: string, status: 'reviewed' | 'dismissed'): Promise<void> {
+  const { error } = await supabase
+    .from('reports')
+    .update({ status })
+    .eq('id', reportId);
+  if (error) throw error;
+}
+
+export async function softDeleteBuild(buildId: string): Promise<void> {
+  const { error } = await supabase
+    .from('builds')
+    .update({ is_public: false, is_deleted: true })
+    .eq('id', buildId);
+  if (error) throw error;
+}
+
+export async function hideComment(commentId: string): Promise<void> {
+  const { error } = await supabase
+    .from('comments')
+    .update({ is_hidden: true })
+    .eq('id', commentId);
+  if (error) throw error;
+}
 
 export async function reportTarget(
   targetType: 'build' | 'loadout' | 'comment',

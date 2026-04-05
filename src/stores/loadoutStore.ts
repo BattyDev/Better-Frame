@@ -18,6 +18,7 @@ export interface LoadoutSlots {
   companionWeaponBuildId: string | null;
   necramechBuildId: string | null;
   parazonBuildId: string | null;
+  kdriveBuildId: string | null;
 }
 
 export interface LoadoutBuildSummary {
@@ -88,6 +89,7 @@ function createInitialState(): LoadoutState {
       companionWeaponBuildId: null,
       necramechBuildId: null,
       parazonBuildId: null,
+      kdriveBuildId: null,
     },
     buildSummaries: {},
     focusSchool: null,
@@ -183,6 +185,7 @@ export const useLoadoutStore = create<LoadoutState & LoadoutActions>()((set, get
         companionWeaponBuildId: data.companion_weapon_build_id ?? null,
         necramechBuildId: data.necramech_build_id ?? null,
         parazonBuildId: data.parazon_build_id ?? null,
+        kdriveBuildId: data.kdrive_build_id ?? null,
       },
       focusSchool: data.focus_school,
       isPublic: data.is_public,
@@ -212,6 +215,7 @@ export const useLoadoutStore = create<LoadoutState & LoadoutActions>()((set, get
       companion_weapon_build_id: state.slots.companionWeaponBuildId,
       necramech_build_id: state.slots.necramechBuildId,
       parazon_build_id: state.slots.parazonBuildId,
+      kdrive_build_id: state.slots.kdriveBuildId,
       focus_school: state.focusSchool,
       is_public: state.isPublic,
     };

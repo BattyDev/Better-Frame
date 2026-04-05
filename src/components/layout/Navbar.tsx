@@ -60,6 +60,18 @@ export default function Navbar() {
               >
                 {profile?.username ?? 'Profile'}
               </Link>
+              {profile && (profile.role === 'admin' || profile.role === 'moderator') && (
+                <Link
+                  to="/admin"
+                  className={`px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${
+                    location.pathname === '/admin'
+                      ? 'bg-wf-bg-hover text-wf-warning'
+                      : 'text-wf-warning/60 hover:text-wf-warning hover:bg-wf-bg-light'
+                  }`}
+                >
+                  Admin
+                </Link>
+              )}
             </div>
           ) : (
             <>

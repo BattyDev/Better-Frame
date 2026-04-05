@@ -11,6 +11,9 @@ const CATEGORIES: { value: ItemCategory | 'all'; label: string }[] = [
   { value: 'Primary', label: 'Primary' },
   { value: 'Secondary', label: 'Secondary' },
   { value: 'Melee', label: 'Melee' },
+  { value: 'Archwing', label: 'Archwing' },
+  { value: 'Companion', label: 'Companion' },
+  { value: 'Necramech', label: 'Necramech' },
 ];
 
 const SORT_OPTIONS: { value: SortOption; label: string }[] = [
@@ -27,6 +30,8 @@ export default function Browse() {
   const [search, setSearch] = useState('');
   const [debouncedSearch, setDebouncedSearch] = useState('');
   const [page, setPage] = useState(0);
+  const [maxForma, setMaxForma] = useState<number | null>(null);
+  const [hasReactor, setHasReactor] = useState<boolean | null>(null);
 
   // Debounce search input
   function handleSearchChange(value: string) {
@@ -37,12 +42,12 @@ export default function Browse() {
     (handleSearchChange as { _timer?: ReturnType<typeof setTimeout> })._timer = timer;
   }
 
-  const queryKey = ['browse', category, sort, debouncedSearch, page];
+  const queryKey = ['browse', category, sort, debouncedSearch, page, maxForma, hasReactor];
 
   const { data, isLoading, isError } = useQuery({
     queryKey,
     queryFn: () =>
-      fetchPublicBuilds({ category, sort, search: debouncedSearch, page, pageSize: PAGE_SIZE }),
+      fetchPublicBuilds({ category, sort, search: debouncedSearch, page, pageSize: PAGE_SIZE, maxForma: maxForma ?? undefined, hasReactor: hasReactor ?? undefined }),
     placeholderData: (prev) => prev,
   });
 
@@ -110,6 +115,38 @@ export default function Browse() {
                 {opt.label}
               </button>
             ))}
+          </div>
+        </div>
+
+        {/* Advanced filters */}
+        <div className="flex flex-wrap gap-3 mb-6">
+          {/* Max Forma */}
+          <div className="flex items-center gap-2">
+            <label className="text-xs text-wf-text-muted">Max Forma:</label>
+            <select
+              value={maxForma ?? ''}
+              onChange={(e) => { setMaxForma(e.target.value ? Number(e.target.value) : null); setPage(0); }}
+              className="bg-wf-bg-card border border-wf-border rounded px-2 py-1 text-xs text-wf-text focus:outline-none focus:border-wf-border-light"
+            >
+              <option value="">Any</option>
+              {[0, 1, 2, 3, 4, 5, 6].map(n => (
+                <option key={n} value={n}>{n}</option>
+              ))}
+            </select>
+          </div>
+
+          {/* Reactor/Catalyst */}
+          <div className="flex items-center gap-2">
+            <label className="text-xs text-wf-text-muted">Reactor/Catalyst:</label>
+            <select
+              value={hasReactor === null ? '' : hasReactor ? 'yes' : 'no'}
+              onChange={(e) => { setHasReactor(e.target.value === '' ? null : e.target.value === 'yes'); setPage(0); }}
+              className="bg-wf-bg-card border border-wf-border rounded px-2 py-1 text-xs text-wf-text focus:outline-none focus:border-wf-border-light"
+            >
+              <option value="">Any</option>
+              <option value="yes">Installed</option>
+              <option value="no">Not installed</option>
+            </select>
           </div>
         </div>
 

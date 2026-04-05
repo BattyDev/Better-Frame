@@ -20,6 +20,7 @@ import {
   getAllSentinelWeapons, getSentinelWeaponMods,
   getAllNecramechs, getNecramechMods,
   getParazonMods,
+  getAllKDrives, getKDriveMods,
 } from '../data/equipmentData';
 import { ModCard } from '../components/builder/ModCard';
 import { PolarityIcon } from '../components/ui/PolarityIcon';
@@ -35,6 +36,7 @@ function parseCategory(param: string | undefined): EquipmentCategory | null {
     'companion-weapon': 'CompanionWeapon',
     necramech: 'Necramech',
     parazon: 'Parazon',
+    kdrive: 'KDrive',
   };
   return param ? (map[param.toLowerCase()] ?? null) : null;
 }
@@ -46,6 +48,7 @@ function getCategoryLabel(cat: EquipmentCategory): string {
     CompanionWeapon: 'Companion Weapon',
     Necramech: 'Necramech',
     Parazon: 'Parazon',
+    KDrive: 'K-Drive',
   };
   return labels[cat];
 }
@@ -98,6 +101,13 @@ function getItemsForCategory(cat: EquipmentCategory): EquipmentItem[] {
         imageName: 'parazon-f34e5b17ee.png',
         polarities: [],
       }];
+    case 'KDrive':
+      return getAllKDrives().map(k => ({
+        uniqueName: k.uniqueName,
+        name: k.name,
+        imageName: k.imageName,
+        polarities: [],
+      }));
   }
 }
 
@@ -108,6 +118,7 @@ function getModsForCategory(cat: EquipmentCategory, itemName?: string): ModData[
     case 'CompanionWeapon': return getSentinelWeaponMods();
     case 'Necramech': return getNecramechMods(itemName);
     case 'Parazon': return getParazonMods();
+    case 'KDrive': return getKDriveMods();
   }
 }
 
