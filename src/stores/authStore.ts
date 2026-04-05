@@ -135,19 +135,28 @@ export const useAuthStore = create<AuthState>((set, get) => ({
       return { error: 'Not authenticated' };
     }
 
-    const { error: dbError, data } = await supabase
+    const { error: dbError } = await supabase
       .from('profiles')
       .update(updates)
-      .eq('id', state.user.id)
-      .select()
-      .single();
+      .eq('id', state.user.id);
 
     if (dbError) {
       return { error: dbError.message };
     }
 
+    // Refetch the updated profile
+    const { error: fetchError, data: profile } = await supabase
+      .from('profiles')
+      .select('*')
+      .eq('id', state.user.id)
+      .single();
+
+    if (fetchError) {
+      return { error: fetchError.message };
+    }
+
     // Update the local profile in the store
-    set({ profile: data as UserProfile });
+    set({ profile: profile as UserProfile });
 
     return { error: null };
   },
