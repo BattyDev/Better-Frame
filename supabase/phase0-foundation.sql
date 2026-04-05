@@ -84,7 +84,8 @@ create policy "profiles_insert_own"
 
 create policy "profiles_update_own"
   on profiles for update
-  using (auth.uid() = id);
+  using (auth.uid() = id)
+  with check (auth.uid() = id);
 
 -- Builds: public read, owner CRUD
 create policy "builds_select_public"

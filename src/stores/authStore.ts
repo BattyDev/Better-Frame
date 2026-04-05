@@ -131,7 +131,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
 
   updateProfile: async (updates: { username?: string }): Promise<{ error: string | null }> => {
     const state = get();
-    if (!state.user || !state.profile) {
+    if (!state.user) {
       return { error: 'Not authenticated' };
     }
 
@@ -145,12 +145,14 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     }
 
     // Update the local profile in the store with the changes
-    set({
-      profile: {
-        ...state.profile,
-        ...updates,
-      },
-    });
+    if (state.profile) {
+      set({
+        profile: {
+          ...state.profile,
+          ...updates,
+        },
+      });
+    }
 
     return { error: null };
   },
