@@ -55,6 +55,14 @@ export interface Loadout {
   secondaryBuildId: string | null;
   meleeBuildId: string | null;
   exaltedBuildId: string | null;
+  // Phase 4 slots
+  archwingBuildId: string | null;
+  archgunBuildId: string | null;
+  archmeleeBuildId: string | null;
+  companionBuildId: string | null;
+  companionWeaponBuildId: string | null;
+  necramechBuildId: string | null;
+  parazonBuildId: string | null;
   focusSchool: FocusSchool | null;
   isPublic: boolean;
   voteScore: number;
@@ -68,11 +76,13 @@ export type ItemCategory =
   | 'Primary'
   | 'Secondary'
   | 'Melee'
-  | 'Companion'
   | 'Archwing'
   | 'Archgun'
   | 'Archmelee'
+  | 'Companion'
+  | 'CompanionWeapon'
   | 'Necramech'
+  | 'Parazon'
   | 'KDrive';
 
 export type FocusSchool =

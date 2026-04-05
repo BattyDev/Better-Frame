@@ -87,7 +87,7 @@ export default function WeaponBuilder() {
     localStorage.removeItem(getDraftKey(category));
   }, [resetBuild, category]);
 
-  if (!['Primary', 'Secondary', 'Melee'].includes(category)) {
+  if (!['Primary', 'Secondary', 'Melee', 'Archgun', 'Archmelee'].includes(category)) {
     return (
       <div className="flex-1 p-4 lg:p-6">
         <p className="text-wf-text-muted">Invalid weapon category.</p>
@@ -97,7 +97,9 @@ export default function WeaponBuilder() {
 
   const label = category === 'Primary' ? 'Primary'
     : category === 'Secondary' ? 'Secondary'
-    : 'Melee';
+    : category === 'Melee' ? 'Melee'
+    : category === 'Archgun' ? 'Arch-Gun'
+    : 'Arch-Melee';
 
   return (
     <div className="flex-1 p-4 lg:p-6">

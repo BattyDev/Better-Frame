@@ -99,6 +99,8 @@ export function WeaponModSlotGrid() {
   if (!weapon) return null;
 
   const isMelee = weapon.category === 'Melee';
+  // Arch-weapons don't have exilus or stance slots
+  const hasSpecialSlot = weapon.category !== 'Archgun' && weapon.category !== 'Archmelee';
 
   function handleDragStart(event: DragStartEvent) {
     setActiveDragId(event.active.id as string);
@@ -128,8 +130,8 @@ export function WeaponModSlotGrid() {
       onDragEnd={handleDragEnd}
     >
       <div className="space-y-4">
-        {/* Stance (melee) or Exilus (guns) row */}
-        <div className="flex gap-3 justify-center">
+        {/* Stance (melee) or Exilus (guns) row — hidden for arch-weapons */}
+        {hasSpecialSlot && <div className="flex gap-3 justify-center">
           {isMelee ? (
             <DroppableSlot
               id="wslot-stance"
@@ -161,7 +163,7 @@ export function WeaponModSlotGrid() {
               )}
             </DroppableSlot>
           )}
-        </div>
+        </div>}
 
         {/* 8 regular mod slots in 2 rows of 4 */}
         <div className="grid grid-cols-4 gap-3 justify-items-center">

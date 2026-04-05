@@ -10,6 +10,14 @@ export interface LoadoutSlots {
   secondaryBuildId: string | null;
   meleeBuildId: string | null;
   exaltedBuildId: string | null;
+  // Phase 4
+  archwingBuildId: string | null;
+  archgunBuildId: string | null;
+  archmeleeBuildId: string | null;
+  companionBuildId: string | null;
+  companionWeaponBuildId: string | null;
+  necramechBuildId: string | null;
+  parazonBuildId: string | null;
 }
 
 export interface LoadoutBuildSummary {
@@ -73,6 +81,13 @@ function createInitialState(): LoadoutState {
       secondaryBuildId: null,
       meleeBuildId: null,
       exaltedBuildId: null,
+      archwingBuildId: null,
+      archgunBuildId: null,
+      archmeleeBuildId: null,
+      companionBuildId: null,
+      companionWeaponBuildId: null,
+      necramechBuildId: null,
+      parazonBuildId: null,
     },
     buildSummaries: {},
     focusSchool: null,
@@ -161,6 +176,13 @@ export const useLoadoutStore = create<LoadoutState & LoadoutActions>()((set, get
         secondaryBuildId: data.secondary_build_id,
         meleeBuildId: data.melee_build_id,
         exaltedBuildId: data.exalted_build_id,
+        archwingBuildId: data.archwing_build_id ?? null,
+        archgunBuildId: data.archgun_build_id ?? null,
+        archmeleeBuildId: data.archmelee_build_id ?? null,
+        companionBuildId: data.companion_build_id ?? null,
+        companionWeaponBuildId: data.companion_weapon_build_id ?? null,
+        necramechBuildId: data.necramech_build_id ?? null,
+        parazonBuildId: data.parazon_build_id ?? null,
       },
       focusSchool: data.focus_school,
       isPublic: data.is_public,
@@ -183,6 +205,13 @@ export const useLoadoutStore = create<LoadoutState & LoadoutActions>()((set, get
       secondary_build_id: state.slots.secondaryBuildId,
       melee_build_id: state.slots.meleeBuildId,
       exalted_build_id: state.slots.exaltedBuildId,
+      archwing_build_id: state.slots.archwingBuildId,
+      archgun_build_id: state.slots.archgunBuildId,
+      archmelee_build_id: state.slots.archmeleeBuildId,
+      companion_build_id: state.slots.companionBuildId,
+      companion_weapon_build_id: state.slots.companionWeaponBuildId,
+      necramech_build_id: state.slots.necramechBuildId,
+      parazon_build_id: state.slots.parazonBuildId,
       focus_school: state.focusSchool,
       is_public: state.isPublic,
     };

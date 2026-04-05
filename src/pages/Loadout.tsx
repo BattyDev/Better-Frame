@@ -4,11 +4,22 @@ import { useLoadoutStore, type LoadoutBuildSummary } from '../stores/loadoutStor
 import type { FocusSchool } from '../types';
 
 const SLOT_CONFIG = [
-  { key: 'warframeBuildId' as const, label: 'Warframe', category: 'Warframe' },
-  { key: 'primaryBuildId' as const, label: 'Primary', category: 'Primary' },
-  { key: 'secondaryBuildId' as const, label: 'Secondary', category: 'Secondary' },
-  { key: 'meleeBuildId' as const, label: 'Melee', category: 'Melee' },
-  { key: 'exaltedBuildId' as const, label: 'Exalted', category: null },
+  // Combat
+  { key: 'warframeBuildId' as const, label: 'Warframe', category: 'Warframe', group: 'Combat' },
+  { key: 'primaryBuildId' as const, label: 'Primary', category: 'Primary', group: 'Combat' },
+  { key: 'secondaryBuildId' as const, label: 'Secondary', category: 'Secondary', group: 'Combat' },
+  { key: 'meleeBuildId' as const, label: 'Melee', category: 'Melee', group: 'Combat' },
+  { key: 'exaltedBuildId' as const, label: 'Exalted', category: null, group: 'Combat' },
+  // Companion
+  { key: 'companionBuildId' as const, label: 'Companion', category: 'Companion', group: 'Companion' },
+  { key: 'companionWeaponBuildId' as const, label: 'Companion Weapon', category: 'CompanionWeapon', group: 'Companion' },
+  // Archwing Suite
+  { key: 'archwingBuildId' as const, label: 'Archwing', category: 'Archwing', group: 'Archwing' },
+  { key: 'archgunBuildId' as const, label: 'Arch-Gun', category: 'Archgun', group: 'Archwing' },
+  { key: 'archmeleeBuildId' as const, label: 'Arch-Melee', category: 'Archmelee', group: 'Archwing' },
+  // Other
+  { key: 'necramechBuildId' as const, label: 'Necramech', category: 'Necramech', group: 'Other' },
+  { key: 'parazonBuildId' as const, label: 'Parazon', category: 'Parazon', group: 'Other' },
 ] as const;
 
 const FOCUS_SCHOOLS: FocusSchool[] = ['Madurai', 'Vazarin', 'Naramon', 'Zenurik', 'Unairu'];
@@ -96,29 +107,36 @@ export default function Loadout() {
         />
       </div>
 
-      {/* Build slots */}
-      <div className="space-y-3 mb-6">
-        <h2 className="text-sm font-medium text-wf-gold">Builds</h2>
-        {SLOT_CONFIG.map(({ key, label, category }) => {
-          const currentBuildId = slots[key];
-          const summary = buildSummaries[key];
-          const compatible = category
-            ? userBuilds.filter(b => b.itemCategory === category)
-            : userBuilds;
+      {/* Build slots grouped */}
+      {(['Combat', 'Companion', 'Archwing', 'Other'] as const).map((group) => {
+        const groupSlots = SLOT_CONFIG.filter(s => s.group === group);
+        return (
+          <div key={group} className="space-y-2 mb-5">
+            <h2 className="text-xs font-semibold text-wf-text-dim uppercase tracking-wider">
+              {group}
+            </h2>
+            {groupSlots.map(({ key, label, category }) => {
+              const currentBuildId = slots[key];
+              const summary = buildSummaries[key];
+              const compatible = category
+                ? userBuilds.filter(b => b.itemCategory === category)
+                : userBuilds;
 
-          return (
-            <BuildSlot
-              key={key}
-              label={label}
-              currentBuildId={currentBuildId}
-              summary={summary}
-              builds={compatible}
-              onSelect={(buildId) => setSlot(key, buildId)}
-              onClear={() => clearSlot(key)}
-            />
-          );
-        })}
-      </div>
+              return (
+                <BuildSlot
+                  key={key}
+                  label={label}
+                  currentBuildId={currentBuildId}
+                  summary={summary}
+                  builds={compatible}
+                  onSelect={(buildId) => setSlot(key, buildId)}
+                  onClear={() => clearSlot(key)}
+                />
+              );
+            })}
+          </div>
+        );
+      })}
 
       {/* Focus School */}
       <div className="mb-6">

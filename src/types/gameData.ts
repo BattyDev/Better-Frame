@@ -72,9 +72,75 @@ export interface ArcaneData {
   tradable: boolean;
 }
 
+// ---- Archwing data ----
+
+export interface ArchwingData {
+  uniqueName: string;
+  name: string;
+  description: string;
+  imageName: string;
+  category: 'Archwing';
+  health: number;
+  shield: number;
+  armor: number;
+  power: number;
+  abilities: WarframeAbility[];
+  polarities: string[];
+  masteryReq?: number;
+  isPrime?: boolean;
+  wikiaThumbnail?: string;
+  wikiaUrl?: string;
+}
+
+// ---- Companion data (Pets + Sentinels) ----
+
+export interface CompanionData {
+  uniqueName: string;
+  name: string;
+  description?: string;
+  imageName: string;
+  category: 'Pets' | 'Sentinels';
+  health: number;
+  shield: number;
+  armor: number;
+  power: number;
+  polarities: string[];
+  productCategory?: string; // e.g. 'KubrowPets', 'SentinelPets'
+  masteryReq?: number;
+  wikiaThumbnail?: string;
+  wikiaUrl?: string;
+}
+
+// ---- Sentinel Weapon data ----
+
+export interface SentinelWeaponData {
+  uniqueName: string;
+  name: string;
+  description?: string;
+  imageName: string;
+  category: 'SentinelWeapons';
+  attacks?: WeaponAttack[];
+  fireRate?: number;
+  polarities: string[];
+  masteryReq?: number;
+  wikiaThumbnail?: string;
+  wikiaUrl?: string;
+}
+
+// ---- Necramech data (from Warframes.json, productCategory: 'MechSuits') ----
+// Uses WarframeData interface with productCategory: 'MechSuits'
+
 // ---- Weapon data ----
 
-export type WeaponCategory = 'Primary' | 'Secondary' | 'Melee';
+export type WeaponCategory = 'Primary' | 'Secondary' | 'Melee' | 'Archgun' | 'Archmelee';
+
+// Category for equipment builders (non-weapon, non-warframe items)
+export type EquipmentCategory =
+  | 'Archwing'
+  | 'Companion'
+  | 'CompanionWeapon'
+  | 'Necramech'
+  | 'Parazon';
 
 export type DamageType =
   | 'impact' | 'puncture' | 'slash'

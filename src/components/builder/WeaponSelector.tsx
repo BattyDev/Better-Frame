@@ -38,7 +38,9 @@ export function WeaponSelector({ category }: WeaponSelectorProps) {
 
   const label = category === 'Primary' ? 'Primary Weapon'
     : category === 'Secondary' ? 'Secondary Weapon'
-    : 'Melee Weapon';
+    : category === 'Melee' ? 'Melee Weapon'
+    : category === 'Archgun' ? 'Arch-Gun'
+    : 'Arch-Melee';
 
   return (
     <div className="space-y-4">
@@ -49,7 +51,7 @@ export function WeaponSelector({ category }: WeaponSelectorProps) {
           type="text"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          placeholder={`Search ${category.toLowerCase()} weapons...`}
+          placeholder={`Search ${label.toLowerCase()}...`}
           className="flex-1 px-3 py-2 rounded bg-wf-bg-dark border border-wf-border
                      text-wf-text text-sm placeholder:text-wf-text-muted
                      focus:outline-none focus:border-wf-gold-dim"

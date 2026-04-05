@@ -1,15 +1,22 @@
-// Game data access layer for weapons (Primary, Secondary, Melee)
+// Game data access layer for weapons (Primary, Secondary, Melee, Archgun, Archmelee)
 import primaryJson from './Primary.json';
 import secondaryJson from './Secondary.json';
 import meleeJson from './Melee.json';
+import archGunJson from './ArchGun.json';
+import archMeleeJson from './ArchMelee.json';
 import type { WeaponData, WeaponCategory, ModData } from '../types/gameData';
 import { getAllMods } from './warframeData';
 
 const primaryItems = primaryJson as unknown as WeaponData[];
 const secondaryItems = secondaryJson as unknown as WeaponData[];
 const meleeItems = meleeJson as unknown as WeaponData[];
+const archGunItems = archGunJson as unknown as WeaponData[];
+const archMeleeItems = archMeleeJson as unknown as WeaponData[];
 
-const allWeapons: WeaponData[] = [...primaryItems, ...secondaryItems, ...meleeItems];
+const allWeapons: WeaponData[] = [
+  ...primaryItems, ...secondaryItems, ...meleeItems,
+  ...archGunItems, ...archMeleeItems,
+];
 
 // Pre-built indexes
 const weaponByName = new Map<string, WeaponData>();
@@ -31,6 +38,8 @@ export function getWeaponsByCategory(category: WeaponCategory): WeaponData[] {
     case 'Primary': return primaryItems;
     case 'Secondary': return secondaryItems;
     case 'Melee': return meleeItems;
+    case 'Archgun': return archGunItems;
+    case 'Archmelee': return archMeleeItems;
   }
 }
 
@@ -102,6 +111,12 @@ export function getWeaponMods(category: WeaponCategory): ModData[] {
         MELEE_COMPATS.has(m.compatName)
       );
     }
+    if (category === 'Archgun') {
+      return m.type === 'Arch-Gun Mod' && m.compatName === 'Archgun';
+    }
+    if (category === 'Archmelee') {
+      return m.type === 'Arch-Melee Mod' && m.compatName === 'Archmelee';
+    }
     return false;
   });
 }
@@ -119,6 +134,7 @@ export function getWeaponExilusMods(category: WeaponCategory): ModData[] {
     if (category === 'Melee') {
       return m.type === 'Melee Mod';
     }
+    // Arch-weapons don't have exilus slots
     return false;
   });
 }
@@ -140,6 +156,14 @@ export function getWeaponCompatibleMods(
   const allMods = getAllMods();
   const baseName = weaponName?.replace(/ Prime$/, '').replace(/ Wraith$/, '')
     .replace(/ Vandal$/, '').replace(/^Kuva /, '').replace(/^Tenet /, '') ?? null;
+
+  // Arch-weapons: just return the category mods (no augments in warframe-items data)
+  if (category === 'Archgun') {
+    return allMods.filter(m => m.type === 'Arch-Gun Mod' && m.compatName === 'Archgun');
+  }
+  if (category === 'Archmelee') {
+    return allMods.filter(m => m.type === 'Arch-Melee Mod' && m.compatName === 'Archmelee');
+  }
 
   return allMods.filter(m => {
     if (m.type === 'Stance Mod') return false;
