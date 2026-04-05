@@ -170,38 +170,10 @@ end;
 $$;
 
 -- ─── RLS policies for existing tables ────────────────────────────────────────
--- Ensure public builds are readable by anyone (including anon).
+-- NOTE: profiles, builds, loadouts tables and their base RLS policies are
+-- created in phase0-foundation.sql. The policies below are only created if
+-- they don't already exist (phase0 creates them, so these are safe no-ops).
 
+-- Ensure RLS is enabled (idempotent)
 alter table builds enable row level security;
-
--- Anyone can read public builds
-create policy "builds_select_public"
-  on builds for select
-  using (is_public = true or auth.uid() = user_id);
-
--- Only owner can insert/update/delete their builds
-create policy "builds_insert_own"
-  on builds for insert
-  with check (auth.uid() = user_id);
-
-create policy "builds_update_own"
-  on builds for update
-  using (auth.uid() = user_id);
-
-create policy "builds_delete_own"
-  on builds for delete
-  using (auth.uid() = user_id);
-
--- Allow the vote_on_target RPC (security definer) to update builds
--- (security definer functions bypass RLS, so no extra policy needed)
-
--- Profiles are publicly readable
 alter table profiles enable row level security;
-
-create policy "profiles_select_all"
-  on profiles for select
-  using (true);
-
-create policy "profiles_update_own"
-  on profiles for update
-  using (auth.uid() = id);
