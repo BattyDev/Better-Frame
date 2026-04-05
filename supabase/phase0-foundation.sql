@@ -16,8 +16,8 @@ create table if not exists profiles (
   updated_at    timestamptz default now()
 );
 
--- NOTE: Profile creation is handled by the app's signUp flow (authStore.ts),
--- which inserts into profiles after supabase.auth.signUp(). No trigger needed.
+-- NOTE: Profile creation is handled by a database trigger (see fix-profile-creation-trigger.sql).
+-- The username is passed via user metadata during signUp and the trigger creates the profile row.
 
 -- ─── Builds ─────────────────────────────────────────────────────────────────
 
