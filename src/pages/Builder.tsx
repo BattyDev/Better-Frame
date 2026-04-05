@@ -1,4 +1,4 @@
-import { useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { WarframeSelector } from '../components/builder/WarframeSelector';
 import { ModSlotGrid } from '../components/builder/ModSlotGrid';
 import { ModBrowser } from '../components/builder/ModBrowser';
@@ -13,8 +13,12 @@ import { supabase } from '../lib/supabase';
 import { getWarframeByUniqueName } from '../data/warframeData';
 
 const DRAFT_KEY = 'better-frame-draft';
+const VISITED_KEY = 'tennotrove-builder-visited';
 
 export default function Builder() {
+  const [showWelcome, setShowWelcome] = useState(
+    () => !localStorage.getItem(VISITED_KEY),
+  );
   const warframe = useBuilderStore((s: ReturnType<typeof useBuilderStore.getState>) => s.warframe);
   const exportConfig = useBuilderStore((s: ReturnType<typeof useBuilderStore.getState>) => s.exportConfig);
   const importConfig = useBuilderStore((s: ReturnType<typeof useBuilderStore.getState>) => s.importConfig);
@@ -106,6 +110,26 @@ export default function Builder() {
           )}
         </div>
       </div>
+
+      {/* First-visit welcome banner */}
+      {showWelcome && (
+        <div className="mb-4 p-4 rounded-lg bg-wf-bg-card border border-wf-gold-dim flex items-start justify-between gap-4">
+          <p className="text-sm text-wf-text-dim">
+            <span className="text-wf-gold font-medium">Welcome to the builder!</span> Select a
+            warframe above, then drag mods into slots. Your build auto-saves as a draft — sign in
+            to save permanently and share.
+          </p>
+          <button
+            onClick={() => {
+              localStorage.setItem(VISITED_KEY, '1');
+              setShowWelcome(false);
+            }}
+            className="text-xs text-wf-text-muted hover:text-wf-text shrink-0 transition-colors"
+          >
+            Dismiss
+          </button>
+        </div>
+      )}
 
       {/* Warframe selector / header */}
       <WarframeSelector />

@@ -1,4 +1,5 @@
 import { useEffect, useCallback } from 'react';
+import { Link } from 'react-router-dom';
 import { useAuthStore } from '../stores/authStore';
 import { useLoadoutStore, type LoadoutBuildSummary } from '../stores/loadoutStore';
 import type { FocusSchool } from '../types';
@@ -55,9 +56,66 @@ export default function Loadout() {
 
   if (!user) {
     return (
-      <div className="flex-1 p-4 lg:p-6">
-        <h1 className="text-2xl font-bold text-wf-gold mb-4">Loadout Builder</h1>
-        <p className="text-wf-text-muted">Sign in to create loadouts.</p>
+      <div className="flex-1 p-4 lg:p-6 max-w-3xl">
+        <h1 className="text-2xl font-bold text-wf-gold mb-6">Loadout Builder</h1>
+
+        <div className="rounded-lg bg-wf-bg-card border border-wf-border p-6 mb-6 text-center">
+          <p className="text-wf-text mb-2">
+            Loadouts combine your saved builds into a complete equipment setup.
+          </p>
+          <p className="text-sm text-wf-text-dim mb-4">
+            Sign in to create loadouts from your saved warframe, weapon, and companion builds.
+          </p>
+          <div className="flex gap-3 justify-center">
+            <Link
+              to="/login"
+              className="px-5 py-2 bg-wf-gold text-wf-bg-dark font-semibold rounded-lg hover:bg-wf-gold-light transition-colors text-sm"
+            >
+              Sign In to Create Loadouts
+            </Link>
+            <Link
+              to="/builder"
+              className="px-5 py-2 border border-wf-border text-wf-text-dim rounded-lg hover:bg-wf-bg-hover transition-colors text-sm"
+            >
+              Build Something First
+            </Link>
+          </div>
+        </div>
+
+        {/* Slot preview (read-only) */}
+        {(['Combat', 'Companion', 'Archwing', 'Other'] as const).map((group) => {
+          const groupSlots = SLOT_CONFIG.filter((s) => s.group === group);
+          return (
+            <div key={group} className="space-y-2 mb-5">
+              <h2 className="text-xs font-semibold text-wf-text-dim uppercase tracking-wider">
+                {group}
+              </h2>
+              {groupSlots.map(({ key, label }) => (
+                <div
+                  key={key}
+                  className="flex items-center gap-3 p-3 rounded-lg bg-wf-bg-card border border-wf-border opacity-50"
+                >
+                  <span className="text-xs text-wf-text-dim w-20 shrink-0">{label}</span>
+                  <span className="text-xs text-wf-text-muted italic">No build selected</span>
+                </div>
+              ))}
+            </div>
+          );
+        })}
+
+        <div className="mb-6">
+          <h2 className="text-sm font-medium text-wf-gold mb-2 opacity-50">Focus School</h2>
+          <div className="flex gap-2 opacity-50">
+            {FOCUS_SCHOOLS.map((school) => (
+              <span
+                key={school}
+                className="px-3 py-1.5 rounded text-xs border border-wf-border text-wf-text-dim"
+              >
+                {school}
+              </span>
+            ))}
+          </div>
+        </div>
       </div>
     );
   }
