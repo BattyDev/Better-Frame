@@ -6,11 +6,16 @@ import { fetchMyBuilds, toggleBuildPublic } from '../lib/social';
 import { BuildCard } from '../components/social/BuildCard';
 
 export default function Profile() {
-  const { user, profile, signOut, resendConfirmation } = useAuthStore();
+  const { user, profile, signOut, resendConfirmation, updateProfile } = useAuthStore();
   const queryClient = useQueryClient();
   const [activeTab, setActiveTab] = useState<'builds' | 'account'>('builds');
   const [resendLoading, setResendLoading] = useState(false);
   const [resendMessage, setResendMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
+  const [editMode, setEditMode] = useState(false);
+  const [editUsername, setEditUsername] = useState(profile?.username ?? '');
+  const [editDisplayName, setEditDisplayName] = useState(profile?.displayName ?? '');
+  const [updateLoading, setUpdateLoading] = useState(false);
+  const [updateMessage, setUpdateMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
 
   const { data: builds = [], isLoading } = useQuery({
     queryKey: ['myBuilds', user?.id],
@@ -42,6 +47,38 @@ export default function Profile() {
       });
     }
     setResendLoading(false);
+  };
+
+  const handleUpdateProfile = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setUpdateLoading(true);
+    setUpdateMessage(null);
+
+    if (!editUsername.trim()) {
+      setUpdateMessage({ type: 'error', text: 'Username cannot be empty' });
+      setUpdateLoading(false);
+      return;
+    }
+
+    const { error } = await updateProfile({
+      username: editUsername.trim(),
+      displayName: editDisplayName.trim() || null,
+    });
+
+    if (error) {
+      setUpdateMessage({ type: 'error', text: error });
+    } else {
+      setUpdateMessage({ type: 'success', text: 'Profile updated successfully!' });
+      setEditMode(false);
+    }
+    setUpdateLoading(false);
+  };
+
+  const handleCancelEdit = () => {
+    setEditUsername(profile?.username ?? '');
+    setEditDisplayName(profile?.displayName ?? '');
+    setEditMode(false);
+    setUpdateMessage(null);
   };
 
   if (!user) {
@@ -155,29 +192,105 @@ export default function Profile() {
       {/* Account tab */}
       {activeTab === 'account' && (
         <div className="max-w-md space-y-6">
-          <div className="bg-wf-bg-card border border-wf-border rounded-lg p-6 space-y-3">
-            <div>
-              <span className="text-wf-text-muted text-sm">Username</span>
-              <p className="text-wf-text">{profile?.username ?? '—'}</p>
-            </div>
-            <div>
-              <span className="text-wf-text-muted text-sm">Email</span>
-              <p className="text-wf-text">{user.email}</p>
-              <p className="text-xs text-wf-text-muted mt-1">
-                {user.email_confirmed_at ? '✓ Confirmed' : '⚠ Unconfirmed'}
-              </p>
-            </div>
-            <div>
-              <span className="text-wf-text-muted text-sm">Member since</span>
-              <p className="text-wf-text">
-                {new Date(user.created_at).toLocaleDateString('en-US', {
-                  year: 'numeric',
-                  month: 'long',
-                  day: 'numeric',
-                })}
-              </p>
-            </div>
-          </div>
+          {editMode ? (
+            <form onSubmit={handleUpdateProfile} className="bg-wf-bg-card border border-wf-border rounded-lg p-6 space-y-4">
+              <h3 className="text-lg font-semibold text-wf-text">Edit Profile</h3>
+              
+              <div>
+                <label className="block text-wf-text-muted text-sm mb-1">Username</label>
+                <input
+                  type="text"
+                  value={editUsername}
+                  onChange={(e) => setEditUsername(e.target.value)}
+                  className="w-full px-3 py-2 bg-wf-bg-hover border border-wf-border rounded text-wf-text focus:outline-none focus:border-wf-gold"
+                  placeholder="Username"
+                />
+              </div>
+
+              <div>
+                <label className="block text-wf-text-muted text-sm mb-1">Display Name (optional)</label>
+                <input
+                  type="text"
+                  value={editDisplayName}
+                  onChange={(e) => setEditDisplayName(e.target.value)}
+                  className="w-full px-3 py-2 bg-wf-bg-hover border border-wf-border rounded text-wf-text focus:outline-none focus:border-wf-gold"
+                  placeholder="Display Name"
+                />
+              </div>
+
+              {updateMessage && (
+                <p
+                  className={`text-sm ${
+                    updateMessage.type === 'success'
+                      ? 'text-wf-success'
+                      : 'text-wf-danger'
+                  }`}
+                >
+                  {updateMessage.text}
+                </p>
+              )}
+
+              <div className="flex gap-2 pt-2">
+                <button
+                  type="submit"
+                  disabled={updateLoading}
+                  className="flex-1 px-4 py-2 bg-wf-gold text-wf-bg-dark rounded-lg hover:bg-wf-gold-light disabled:opacity-50 disabled:cursor-not-allowed transition-colors text-sm font-medium"
+                >
+                  {updateLoading ? 'Saving...' : 'Save Changes'}
+                </button>
+                <button
+                  type="button"
+                  onClick={handleCancelEdit}
+                  className="flex-1 px-4 py-2 bg-wf-bg-hover text-wf-text border border-wf-border rounded-lg hover:border-wf-border-light transition-colors text-sm font-medium"
+                >
+                  Cancel
+                </button>
+              </div>
+            </form>
+          ) : (
+            <>
+              <div className="bg-wf-bg-card border border-wf-border rounded-lg p-6 space-y-3">
+                <div>
+                  <span className="text-wf-text-muted text-sm">Username</span>
+                  <p className="text-wf-text">{profile?.username ?? '—'}</p>
+                </div>
+                {profile?.displayName && (
+                  <div>
+                    <span className="text-wf-text-muted text-sm">Display Name</span>
+                    <p className="text-wf-text">{profile.displayName}</p>
+                  </div>
+                )}
+                <div>
+                  <span className="text-wf-text-muted text-sm">Email</span>
+                  <p className="text-wf-text">{user.email}</p>
+                  <p className="text-xs text-wf-text-muted mt-1">
+                    {user.email_confirmed_at ? '✓ Confirmed' : '⚠ Unconfirmed'}
+                  </p>
+                </div>
+                <div>
+                  <span className="text-wf-text-muted text-sm">Member since</span>
+                  <p className="text-wf-text">
+                    {new Date(user.created_at).toLocaleDateString('en-US', {
+                      year: 'numeric',
+                      month: 'long',
+                      day: 'numeric',
+                    })}
+                  </p>
+                </div>
+              </div>
+
+              <button
+                onClick={() => {
+                  setEditMode(true);
+                  setEditUsername(profile?.username ?? '');
+                  setEditDisplayName(profile?.displayName ?? '');
+                }}
+                className="w-full px-4 py-2 bg-wf-blue/20 text-wf-blue border border-wf-blue/30 rounded-lg hover:bg-wf-blue/30 transition-colors text-sm font-medium"
+              >
+                Edit Profile
+              </button>
+            </>
+          )}
 
           {!user.email_confirmed_at && (
             <div className="bg-wf-warning/10 border border-wf-warning/30 rounded-lg p-4 space-y-3">
@@ -207,7 +320,7 @@ export default function Profile() {
 
           <button
             onClick={signOut}
-            className="px-4 py-2 bg-wf-danger/20 text-wf-danger border border-wf-danger/30 rounded-lg hover:bg-wf-danger/30 transition-colors"
+            className="w-full px-4 py-2 bg-wf-danger/20 text-wf-danger border border-wf-danger/30 rounded-lg hover:bg-wf-danger/30 transition-colors text-sm font-medium"
           >
             Sign Out
           </button>
