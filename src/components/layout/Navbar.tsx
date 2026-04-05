@@ -81,6 +81,18 @@ export default function Navbar() {
     { to: '/dashboard', label: 'Dashboard' },
   ];
 
+  const browseLinks = [
+    { to: '/builds/warframe', label: 'Warframes' },
+    { to: '/builds/primary', label: 'Primary Weapons' },
+    { to: '/builds/secondary', label: 'Secondary Weapons' },
+    { to: '/builds/melee', label: 'Melee Weapons' },
+    { to: '/builds/companion', label: 'Companions' },
+    { to: '/builds/archwing', label: 'Archwing' },
+    { to: '/builds/necramech', label: 'Necramech' },
+    { to: '/loadout', label: 'Loadouts' },
+    { to: '/compare', label: 'Compare Builds' },
+  ];
+
   return (
     <nav className="bg-wf-bg border-b border-wf-border">
       <div className="max-w-7xl mx-auto flex items-center justify-between gap-4 px-4 py-3">
@@ -307,6 +319,26 @@ export default function Navbar() {
           {/* Mobile nav links */}
           <div className="flex flex-col gap-1">
             {coreLinks.map((link) => (
+              <Link
+                key={link.to}
+                to={link.to}
+                className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+                  location.pathname === link.to
+                    ? 'bg-wf-bg-hover text-wf-gold'
+                    : 'text-wf-text-dim hover:text-wf-text hover:bg-wf-bg-light'
+                }`}
+              >
+                {link.label}
+              </Link>
+            ))}
+          </div>
+
+          {/* Browse links */}
+          <div className="flex flex-col gap-1 border-t border-wf-border pt-3">
+            <span className="px-3 text-xs font-medium text-wf-text-muted uppercase tracking-wider">
+              Browse
+            </span>
+            {browseLinks.map((link) => (
               <Link
                 key={link.to}
                 to={link.to}
