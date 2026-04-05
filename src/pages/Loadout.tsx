@@ -27,12 +27,12 @@ const SLOT_CONFIG = [
 const FOCUS_SCHOOLS: FocusSchool[] = ['Madurai', 'Vazarin', 'Naramon', 'Zenurik', 'Unairu'];
 
 export default function Loadout() {
-  const user = useAuthStore((s) => s.user);
-  const name = useLoadoutStore((s) => s.name);
-  const description = useLoadoutStore((s) => s.description);
-  const slots = useLoadoutStore((s) => s.slots);
-  const focusSchool = useLoadoutStore((s) => s.focusSchool);
-  const buildSummaries = useLoadoutStore((s) => s.buildSummaries);
+  const user = useAuthStore((s: ReturnType<typeof useAuthStore.getState>) => s.user);
+  const name = useLoadoutStore((s: ReturnType<typeof useLoadoutStore.getState>) => s.name);
+  const description = useLoadoutStore((s: ReturnType<typeof useLoadoutStore.getState>) => s.description);
+  const slots = useLoadoutStore((s: ReturnType<typeof useLoadoutStore.getState>) => s.slots);
+  const focusSchool = useLoadoutStore((s: ReturnType<typeof useLoadoutStore.getState>) => s.focusSchool);
+  const buildSummaries = useLoadoutStore((s: ReturnType<typeof useLoadoutStore.getState>) => s.buildSummaries);
   const userBuilds = useLoadoutStore((s) => s.userBuilds);
   const isSaving = useLoadoutStore((s) => s.isSaving);
   const setName = useLoadoutStore((s) => s.setName);

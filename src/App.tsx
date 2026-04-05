@@ -32,8 +32,8 @@ import SignUp from './pages/SignUp';
 const queryClient = new QueryClient();
 
 function AppContent() {
-  const initialize = useAuthStore((s) => s.initialize);
-  const initialized = useAuthStore((s) => s.initialized);
+  const initialize = useAuthStore((s: ReturnType<typeof useAuthStore.getState>) => s.initialize);
+  const initialized = useAuthStore((s: ReturnType<typeof useAuthStore.getState>) => s.initialized);
 
   useEffect(() => {
     initialize();

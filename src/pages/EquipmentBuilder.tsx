@@ -128,11 +128,11 @@ export default function EquipmentBuilder() {
   const { category: categoryParam } = useParams<{ category: string }>();
   const category = parseCategory(categoryParam);
 
-  const initCategory = useEquipmentBuilderStore((s) => s.initCategory);
-  const item = useEquipmentBuilderStore((s) => s.item);
-  const hasReactor = useEquipmentBuilderStore((s) => s.hasReactor);
-  const formaCount = useEquipmentBuilderStore((s) => s.formaCount);
-  const exportConfig = useEquipmentBuilderStore((s) => s.exportConfig);
+  const initCategory = useEquipmentBuilderStore((s: ReturnType<typeof useEquipmentBuilderStore.getState>) => s.initCategory);
+  const item = useEquipmentBuilderStore((s: ReturnType<typeof useEquipmentBuilderStore.getState>) => s.item);
+  const hasReactor = useEquipmentBuilderStore((s: ReturnType<typeof useEquipmentBuilderStore.getState>) => s.hasReactor);
+  const formaCount = useEquipmentBuilderStore((s: ReturnType<typeof useEquipmentBuilderStore.getState>) => s.formaCount);
+  const exportConfig = useEquipmentBuilderStore((s: ReturnType<typeof useEquipmentBuilderStore.getState>) => s.exportConfig);
   const importConfig = useEquipmentBuilderStore((s) => s.importConfig);
   const resetBuild = useEquipmentBuilderStore((s) => s.resetBuild);
   const toggleReactor = useEquipmentBuilderStore((s) => s.toggleReactor);
