@@ -15,11 +15,11 @@ import { getWarframeByUniqueName } from '../data/warframeData';
 const DRAFT_KEY = 'better-frame-draft';
 
 export default function Builder() {
-  const warframe = useBuilderStore((s) => s.warframe);
-  const exportConfig = useBuilderStore((s) => s.exportConfig);
-  const importConfig = useBuilderStore((s) => s.importConfig);
-  const resetBuild = useBuilderStore((s) => s.resetBuild);
-  const user = useAuthStore((s) => s.user);
+  const warframe = useBuilderStore((s: ReturnType<typeof useBuilderStore.getState>) => s.warframe);
+  const exportConfig = useBuilderStore((s: ReturnType<typeof useBuilderStore.getState>) => s.exportConfig);
+  const importConfig = useBuilderStore((s: ReturnType<typeof useBuilderStore.getState>) => s.importConfig);
+  const resetBuild = useBuilderStore((s: ReturnType<typeof useBuilderStore.getState>) => s.resetBuild);
+  const user = useAuthStore((s: ReturnType<typeof useAuthStore.getState>) => s.user);
 
   // Auto-save draft to localStorage on changes
   useEffect(() => {

@@ -2,7 +2,7 @@ import { Link } from 'react-router-dom';
 import { useAuthStore } from '../stores/authStore';
 
 export default function Home() {
-  const user = useAuthStore((s) => s.user);
+  const user = useAuthStore((s: ReturnType<typeof useAuthStore.getState>) => s.user);
 
   return (
     <div className="flex flex-col items-center justify-center flex-1 px-4 py-16">

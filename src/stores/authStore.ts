@@ -27,7 +27,7 @@ interface AuthState {
   initialize: () => Promise<void>;
 }
 
-export const useAuthStore = create<AuthState>((set) => ({
+export const useAuthStore = create<AuthState>((set, get) => ({
   user: null,
   session: null,
   profile: null,
@@ -77,7 +77,7 @@ export const useAuthStore = create<AuthState>((set) => ({
     }
   },
 
-  signUp: async (email, password, username) => {
+  signUp: async (email: string, password: string, username: string) => {
     set({ loading: true });
     const emailRedirectTo = getEmailRedirectTo();
 
@@ -99,7 +99,7 @@ export const useAuthStore = create<AuthState>((set) => ({
     return { error: null };
   },
 
-  signIn: async (email, password) => {
+  signIn: async (email: string, password: string) => {
     set({ loading: true });
     const { error } = await supabase.auth.signInWithPassword({ email, password });
     set({ loading: false });
@@ -129,21 +129,21 @@ export const useAuthStore = create<AuthState>((set) => ({
     return { error: null };
   },
 
-  updateProfile: async (updates: { username?: string; displayName?: string | null }) => {
-    const state = useAuthStore.getState();
+  updateProfile: async (updates: { username?: string; displayName?: string | null }): Promise<{ error: string | null }> => {
+    const state = get();
     if (!state.user) {
       return { error: 'Not authenticated' };
     }
 
-    const { error, data } = await supabase
+    const { error: dbError, data } = await supabase
       .from('profiles')
       .update(updates)
       .eq('id', state.user.id)
       .select()
       .single();
 
-    if (error) {
-      return { error: error.message };
+    if (dbError) {
+      return { error: dbError.message };
     }
 
     // Update the local profile in the store

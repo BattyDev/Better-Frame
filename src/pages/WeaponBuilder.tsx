@@ -19,14 +19,14 @@ export default function WeaponBuilder() {
   const { category: categoryParam } = useParams<{ category: string }>();
   const category = (categoryParam?.charAt(0).toUpperCase() + (categoryParam?.slice(1) ?? '')) as WeaponCategory;
 
-  const weapon = useWeaponBuilderStore((s) => s.weapon);
-  const hasCatalyst = useWeaponBuilderStore((s) => s.hasCatalyst);
-  const formaCount = useWeaponBuilderStore((s) => s.formaCount);
-  const exportConfig = useWeaponBuilderStore((s) => s.exportConfig);
-  const importConfig = useWeaponBuilderStore((s) => s.importConfig);
-  const resetBuild = useWeaponBuilderStore((s) => s.resetBuild);
-  const toggleCatalyst = useWeaponBuilderStore((s) => s.toggleCatalyst);
-  const user = useAuthStore((s) => s.user);
+  const weapon = useWeaponBuilderStore((s: ReturnType<typeof useWeaponBuilderStore.getState>) => s.weapon);
+  const hasCatalyst = useWeaponBuilderStore((s: ReturnType<typeof useWeaponBuilderStore.getState>) => s.hasCatalyst);
+  const formaCount = useWeaponBuilderStore((s: ReturnType<typeof useWeaponBuilderStore.getState>) => s.formaCount);
+  const exportConfig = useWeaponBuilderStore((s: ReturnType<typeof useWeaponBuilderStore.getState>) => s.exportConfig);
+  const importConfig = useWeaponBuilderStore((s: ReturnType<typeof useWeaponBuilderStore.getState>) => s.importConfig);
+  const resetBuild = useWeaponBuilderStore((s: ReturnType<typeof useWeaponBuilderStore.getState>) => s.resetBuild);
+  const toggleCatalyst = useWeaponBuilderStore((s: ReturnType<typeof useWeaponBuilderStore.getState>) => s.toggleCatalyst);
+  const user = useAuthStore((s: ReturnType<typeof useAuthStore.getState>) => s.user);
 
   // Reset when category changes
   useEffect(() => {
