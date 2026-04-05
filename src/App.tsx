@@ -5,7 +5,9 @@ import { Analytics } from '@vercel/analytics/react';
 import { SpeedInsights } from '@vercel/speed-insights/react';
 import { useAuthStore } from './stores/authStore';
 import Layout from './components/layout/Layout';
-import Home from './pages/Home';
+import { Home } from './pages/Home';
+import { Search } from './pages/Search';
+import { CategoryBuilds } from './pages/CategoryBuilds';
 import Builder from './pages/Builder';
 import WeaponBuilder from './pages/WeaponBuilder';
 import EquipmentBuilder from './pages/EquipmentBuilder';
@@ -60,6 +62,8 @@ function AppContent() {
     <Routes>
       <Route element={<Layout />}>
         <Route path="/" element={<Home />} />
+        <Route path="/search" element={<Search />} />
+        <Route path="/builds/:category" element={<CategoryBuilds />} />
         <Route path="/builder" element={<Builder />} />
         <Route path="/builder/:category" element={<BuilderRouter />} />
         <Route path="/loadout" element={<Loadout />} />

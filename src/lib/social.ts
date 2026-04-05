@@ -21,6 +21,7 @@ export interface BrowseOptions {
   pageSize?: number;
   maxForma?: number;
   hasReactor?: boolean;
+  itemUniqueName?: string;
 }
 
 function toPublicBuildSummary(row: Record<string, unknown>): PublicBuildSummary {
@@ -49,7 +50,7 @@ export async function fetchPublicBuilds(options: BrowseOptions = {}): Promise<{
   builds: PublicBuildSummary[];
   total: number;
 }> {
-  const { category = 'all', search = '', sort = 'newest', page = 0, pageSize = 20, maxForma, hasReactor } = options;
+  const { category = 'all', search = '', sort = 'newest', page = 0, pageSize = 20, maxForma, hasReactor, itemUniqueName } = options;
 
   let query = supabase
     .from('builds')
@@ -58,6 +59,9 @@ export async function fetchPublicBuilds(options: BrowseOptions = {}): Promise<{
 
   if (category !== 'all') {
     query = query.eq('item_category', category);
+  }
+  if (itemUniqueName) {
+    query = query.eq('item_unique_name', itemUniqueName);
   }
   if (search) {
     query = query.ilike('name', `%${search}%`);
@@ -399,6 +403,59 @@ export async function hideComment(commentId: string): Promise<void> {
     .update({ is_hidden: true })
     .eq('id', commentId);
   if (error) throw error;
+}
+
+// ─── Loadout Search ───────────────────────────────────────────────────────
+
+export async function searchPublicLoadouts(
+  search: string,
+  page = 0,
+  pageSize = 12,
+): Promise<{ loadouts: { id: string; name: string; description: string | null; author: { id: string; username: string } }[]; total: number }> {
+  let query = supabase
+    .from('loadouts')
+    .select('id, name, description, user_id, profiles!user_id(id, username)', { count: 'exact' })
+    .eq('is_public', true);
+
+  if (search) {
+    query = query.ilike('name', `%${search}%`);
+  }
+
+  query = query.order('created_at', { ascending: false }).range(page * pageSize, (page + 1) * pageSize - 1);
+
+  const { data, error, count } = await query;
+  if (error) throw error;
+
+  return {
+    loadouts: (data ?? []).map((r: Record<string, unknown>) => {
+      const profiles = r.profiles as { id: string; username: string } | null;
+      return {
+        id: r.id as string,
+        name: r.name as string,
+        description: r.description as string | null,
+        author: {
+          id: profiles?.id ?? (r.user_id as string),
+          username: profiles?.username ?? 'Unknown',
+        },
+      };
+    }),
+    total: count ?? 0,
+  };
+}
+
+export async function findLoadoutsContainingBuild(
+  buildId: string,
+): Promise<{ id: string; name: string }[]> {
+  const { data, error } = await supabase
+    .from('loadouts')
+    .select('id, name')
+    .eq('is_public', true)
+    .or(
+      `warframe_build_id.eq.${buildId},primary_build_id.eq.${buildId},secondary_build_id.eq.${buildId},melee_build_id.eq.${buildId},exalted_build_id.eq.${buildId},archwing_build_id.eq.${buildId},archgun_build_id.eq.${buildId},archmelee_build_id.eq.${buildId},companion_build_id.eq.${buildId},companion_weapon_build_id.eq.${buildId},necramech_build_id.eq.${buildId},parazon_build_id.eq.${buildId},kdrive_build_id.eq.${buildId}`,
+    );
+
+  if (error) throw error;
+  return (data ?? []).map((r) => ({ id: r.id as string, name: r.name as string }));
 }
 
 export async function reportTarget(
