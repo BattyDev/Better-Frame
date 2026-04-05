@@ -230,3 +230,34 @@ export function formatCredits(n: number): string {
   if (n >= 1000) return `${(n / 1000).toFixed(0)}K`;
   return n.toString();
 }
+
+// ─── localStorage cache ────────────────────────────────────────────────────
+
+const WS_CACHE_KEY = 'bf-worldstate-cache';
+const WS_CACHE_MAX_AGE = 3_600_000; // 1 hour
+
+interface WorldStateCache {
+  data: WorldState;
+  savedAt: number;
+}
+
+export function saveWorldStateCache(data: WorldState): void {
+  try {
+    const entry: WorldStateCache = { data, savedAt: Date.now() };
+    localStorage.setItem(WS_CACHE_KEY, JSON.stringify(entry));
+  } catch {
+    // quota exceeded or unavailable — silently degrade
+  }
+}
+
+export function loadWorldStateCache(): WorldStateCache | null {
+  try {
+    const raw = localStorage.getItem(WS_CACHE_KEY);
+    if (!raw) return null;
+    const entry: WorldStateCache = JSON.parse(raw);
+    if (Date.now() - entry.savedAt > WS_CACHE_MAX_AGE) return null;
+    return entry;
+  } catch {
+    return null;
+  }
+}

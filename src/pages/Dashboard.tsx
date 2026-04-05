@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import { useQuery, keepPreviousData } from '@tanstack/react-query';
 import {
   fetchWorldState,
@@ -6,6 +6,8 @@ import {
   formatCredits,
   getSoonestExpiry,
   EmptyResponseError,
+  saveWorldStateCache,
+  loadWorldStateCache,
   type WorldState,
   type Fissure,
   type Invasion,
@@ -431,9 +433,13 @@ function SteelPathTracker({ data }: { data: WorldState }) {
 export default function Dashboard() {
   const [pins, setPins] = useState<Set<TrackerKey>>(getStoredPins);
 
-  const { data, isLoading, error, dataUpdatedAt, refetch, isRefetching } = useQuery({
+  const cached = useMemo(() => loadWorldStateCache(), []);
+
+  const { data, isLoading, error, dataUpdatedAt, refetch, isRefetching, isFetching } = useQuery({
     queryKey: ['worldState'],
     queryFn: fetchWorldState,
+    initialData: cached?.data,
+    initialDataUpdatedAt: cached?.savedAt,
     placeholderData: keepPreviousData,
     staleTime: 30_000,
     refetchInterval: (query) => {
@@ -448,6 +454,12 @@ export default function Dashboard() {
     },
     retryDelay: (attempt) => Math.min(1000 * 2 ** attempt, 15_000),
   });
+
+  useEffect(() => {
+    if (data && dataUpdatedAt && dataUpdatedAt !== cached?.savedAt) {
+      saveWorldStateCache(data);
+    }
+  }, [data, dataUpdatedAt]);
 
   const togglePin = useCallback((key: TrackerKey) => {
     setPins(prev => {
@@ -514,6 +526,14 @@ export default function Dashboard() {
           )}
         </div>
       </div>
+
+      {isFetching && dataUpdatedAt === cached?.savedAt && (
+        <div className="flex items-center gap-2 px-4 py-2 rounded bg-wf-accent/10 border border-wf-accent/30">
+          <span className="text-xs text-wf-accent">
+            Showing cached data — refreshing...
+          </span>
+        </div>
+      )}
 
       {error && (
         <div className="flex items-center justify-between px-4 py-2 rounded bg-wf-warning/10 border border-wf-warning/30">
