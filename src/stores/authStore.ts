@@ -23,6 +23,7 @@ interface AuthState {
   signIn: (email: string, password: string) => Promise<{ error: string | null }>;
   signOut: () => Promise<void>;
   resendConfirmation: (email: string) => Promise<{ error: string | null }>;
+  updateProfile: (updates: { username?: string; displayName?: string | null }) => Promise<{ error: string | null }>;
   initialize: () => Promise<void>;
 }
 
@@ -124,6 +125,29 @@ export const useAuthStore = create<AuthState>((set) => ({
     if (error) {
       return { error: error.message };
     }
+
+    return { error: null };
+  },
+
+  updateProfile: async (updates: { username?: string; displayName?: string | null }) => {
+    const state = useAuthStore.getState();
+    if (!state.user) {
+      return { error: 'Not authenticated' };
+    }
+
+    const { error, data } = await supabase
+      .from('profiles')
+      .update(updates)
+      .eq('id', state.user.id)
+      .select()
+      .single();
+
+    if (error) {
+      return { error: error.message };
+    }
+
+    // Update the local profile in the store
+    set({ profile: data as UserProfile });
 
     return { error: null };
   },
