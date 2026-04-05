@@ -1,23 +1,45 @@
 import { Link } from 'react-router-dom';
 import type { PublicBuildSummary } from '../../types';
-import { getItemImageUrl } from '../../data/warframeData';
+import { getItemImageUrl, getWarframeByUniqueName } from '../../data/warframeData';
 import { getWeaponByUniqueName } from '../../data/weaponData';
-import { getWarframeByUniqueName } from '../../data/warframeData';
+import {
+  getArchwingByUniqueName,
+  getCompanionByUniqueName,
+  getNecramechByUniqueName,
+} from '../../data/equipmentData';
+
+function resolveItem(summary: PublicBuildSummary): { name?: string; imageName?: string } {
+  switch (summary.itemCategory) {
+    case 'Warframe': {
+      const wf = getWarframeByUniqueName(summary.itemUniqueName);
+      return { name: wf?.name, imageName: wf?.imageName };
+    }
+    case 'Archwing': {
+      const aw = getArchwingByUniqueName(summary.itemUniqueName);
+      return { name: aw?.name, imageName: aw?.imageName };
+    }
+    case 'Companion': {
+      const c = getCompanionByUniqueName(summary.itemUniqueName);
+      return { name: c?.name, imageName: c?.imageName };
+    }
+    case 'Necramech': {
+      const nm = getNecramechByUniqueName(summary.itemUniqueName);
+      return { name: nm?.name, imageName: nm?.imageName };
+    }
+    default: {
+      const weapon = getWeaponByUniqueName(summary.itemUniqueName);
+      return { name: weapon?.name, imageName: weapon?.imageName };
+    }
+  }
+}
 
 function getItemImage(summary: PublicBuildSummary): string | null {
-  if (summary.itemCategory === 'Warframe') {
-    const wf = getWarframeByUniqueName(summary.itemUniqueName);
-    return wf?.imageName ? getItemImageUrl(wf.imageName) : null;
-  }
-  const weapon = getWeaponByUniqueName(summary.itemUniqueName);
-  return weapon?.imageName ? getItemImageUrl(weapon.imageName) : null;
+  const { imageName } = resolveItem(summary);
+  return imageName ? getItemImageUrl(imageName) : null;
 }
 
 function getItemName(summary: PublicBuildSummary): string {
-  if (summary.itemCategory === 'Warframe') {
-    return getWarframeByUniqueName(summary.itemUniqueName)?.name ?? summary.itemUniqueName;
-  }
-  return getWeaponByUniqueName(summary.itemUniqueName)?.name ?? summary.itemUniqueName;
+  return resolveItem(summary).name ?? summary.itemUniqueName;
 }
 
 const CURRENT_VERSION = '38.5'; // Updated periodically; Phase 6 will fetch dynamically

@@ -5,6 +5,7 @@ import { fetchPublicBuilds, type SortOption } from '../lib/social';
 import { BuildCard } from '../components/social/BuildCard';
 import { getWarframeByUniqueName, getItemImageUrl } from '../data/warframeData';
 import { getWeaponByUniqueName } from '../data/weaponData';
+import { getArchwingByUniqueName, getCompanionByUniqueName, getNecramechByUniqueName } from '../data/equipmentData';
 import type { ItemCategory } from '../types';
 
 const CATEGORY_MAP: Record<string, { label: string; itemCategory: ItemCategory; builderRoute: string }> = {
@@ -18,10 +19,23 @@ const CATEGORY_MAP: Record<string, { label: string; itemCategory: ItemCategory; 
 };
 
 function ItemHeader({ uniqueName, category }: { uniqueName: string; category: string }) {
-  const isWarframe = category === 'Warframe';
-  const item = isWarframe
-    ? getWarframeByUniqueName(uniqueName)
-    : getWeaponByUniqueName(uniqueName);
+  let item: { name: string; imageName?: string } | undefined;
+  switch (category) {
+    case 'Warframe':
+      item = getWarframeByUniqueName(uniqueName);
+      break;
+    case 'Archwing':
+      item = getArchwingByUniqueName(uniqueName);
+      break;
+    case 'Companion':
+      item = getCompanionByUniqueName(uniqueName);
+      break;
+    case 'Necramech':
+      item = getNecramechByUniqueName(uniqueName);
+      break;
+    default:
+      item = getWeaponByUniqueName(uniqueName);
+  }
 
   if (!item) return null;
 
