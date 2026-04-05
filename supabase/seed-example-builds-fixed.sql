@@ -10,6 +10,66 @@
 -- ─────────────────────────────────────────────────────────────────────────────
 
 -- ═══════════════════════════════════════════════════════════════════════════════
+-- SEED AUTH USERS (required before profiles)
+-- ═══════════════════════════════════════════════════════════════════════════════
+
+-- Profiles.id references auth.users(id), so seed users first.
+-- Password for all seed users is the same bcrypt hash placeholder.
+INSERT INTO auth.users (
+  instance_id,
+  id,
+  aud,
+  role,
+  email,
+  encrypted_password,
+  email_confirmed_at,
+  raw_app_meta_data,
+  raw_user_meta_data,
+  created_at,
+  updated_at
+) VALUES
+  (
+    '00000000-0000-0000-0000-000000000000',
+    '00000000-0000-0000-0000-000000000001',
+    'authenticated',
+    'authenticated',
+    'seed.betterframe.bot@example.com',
+    '$2a$10$CwTycUXWue0Thq9StjUM0uJ8sL6x7v1Ff9Qxqf6f3W8mQm1sA7m3K',
+    now(),
+    '{"provider":"email","providers":["email"]}'::jsonb,
+    '{"username":"betterframe_bot"}'::jsonb,
+    now(),
+    now()
+  ),
+  (
+    '00000000-0000-0000-0000-000000000000',
+    '00000000-0000-0000-0000-000000000002',
+    'authenticated',
+    'authenticated',
+    'seed.void.trader@example.com',
+    '$2a$10$CwTycUXWue0Thq9StjUM0uJ8sL6x7v1Ff9Qxqf6f3W8mQm1sA7m3K',
+    now(),
+    '{"provider":"email","providers":["email"]}'::jsonb,
+    '{"username":"void_trader"}'::jsonb,
+    now(),
+    now()
+  ),
+  (
+    '00000000-0000-0000-0000-000000000000',
+    '00000000-0000-0000-0000-000000000003',
+    'authenticated',
+    'authenticated',
+    'seed.steel.essence@example.com',
+    '$2a$10$CwTycUXWue0Thq9StjUM0uJ8sL6x7v1Ff9Qxqf6f3W8mQm1sA7m3K',
+    now(),
+    '{"provider":"email","providers":["email"]}'::jsonb,
+    '{"username":"steel_essence"}'::jsonb,
+    now(),
+    now()
+  )
+ON CONFLICT (id) DO NOTHING;
+
+-- ═══════════════════════════════════════════════════════════════════════════════
 -- SEED PROFILES
 -- ═══════════════════════════════════════════════════════════════════════════════
 
@@ -17,7 +77,12 @@ INSERT INTO profiles (id, username, display_name, is_premium, role) VALUES
   ('00000000-0000-0000-0000-000000000001', 'betterframe_bot', '[SEED] BetterFrame Bot', false, 'user'),
   ('00000000-0000-0000-0000-000000000002', 'void_trader', '[SEED] Void Trader', true, 'user'),
   ('00000000-0000-0000-0000-000000000003', 'steel_essence', '[SEED] Steel Essence', false, 'user')
-ON CONFLICT (id) DO NOTHING;
+ON CONFLICT (id) DO UPDATE
+SET
+  username = EXCLUDED.username,
+  display_name = EXCLUDED.display_name,
+  is_premium = EXCLUDED.is_premium,
+  role = EXCLUDED.role;
 
 -- ═══════════════════════════════════════════════════════════════════════════════
 -- WARFRAME BUILDS (20)

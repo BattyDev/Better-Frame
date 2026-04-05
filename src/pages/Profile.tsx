@@ -13,7 +13,6 @@ export default function Profile() {
   const [resendMessage, setResendMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
   const [editMode, setEditMode] = useState(false);
   const [editUsername, setEditUsername] = useState(profile?.username ?? '');
-  const [editDisplayName, setEditDisplayName] = useState(profile?.displayName ?? '');
   const [updateLoading, setUpdateLoading] = useState(false);
   const [updateMessage, setUpdateMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
 
@@ -62,7 +61,6 @@ export default function Profile() {
 
     const { error } = await updateProfile({
       username: editUsername.trim(),
-      displayName: editDisplayName.trim() || null,
     });
 
     if (error) {
@@ -76,7 +74,6 @@ export default function Profile() {
 
   const handleCancelEdit = () => {
     setEditUsername(profile?.username ?? '');
-    setEditDisplayName(profile?.displayName ?? '');
     setEditMode(false);
     setUpdateMessage(null);
   };
@@ -93,16 +90,13 @@ export default function Profile() {
       <div className="bg-wf-bg-card border border-wf-border rounded-lg p-6 mb-6 flex items-center gap-4">
         <div className="w-16 h-16 rounded-full bg-wf-bg-hover border border-wf-border flex items-center justify-center flex-shrink-0">
           <span className="text-wf-gold text-2xl font-bold">
-            {(profile?.displayName ?? profile?.username ?? 'U').charAt(0).toUpperCase()}
+            {(profile?.username ?? 'U').charAt(0).toUpperCase()}
           </span>
         </div>
         <div className="flex-1 min-w-0">
           <h1 className="text-xl font-bold text-wf-gold truncate">
-            {profile?.displayName ?? profile?.username ?? 'Tenno'}
+            {profile?.username ?? 'Tenno'}
           </h1>
-          {profile?.displayName && (
-            <p className="text-sm text-wf-text-muted">@{profile.username}</p>
-          )}
           <div className="flex gap-4 mt-1 text-xs text-wf-text-muted">
             <span>{builds.length} build{builds.length !== 1 ? 's' : ''}</span>
             <span>{publicCount} public</span>
@@ -207,17 +201,6 @@ export default function Profile() {
                 />
               </div>
 
-              <div>
-                <label className="block text-wf-text-muted text-sm mb-1">Display Name (optional)</label>
-                <input
-                  type="text"
-                  value={editDisplayName}
-                  onChange={(e) => setEditDisplayName(e.target.value)}
-                  className="w-full px-3 py-2 bg-wf-bg-hover border border-wf-border rounded text-wf-text focus:outline-none focus:border-wf-gold"
-                  placeholder="Display Name"
-                />
-              </div>
-
               {updateMessage && (
                 <p
                   className={`text-sm ${
@@ -254,12 +237,6 @@ export default function Profile() {
                   <span className="text-wf-text-muted text-sm">Username</span>
                   <p className="text-wf-text">{profile?.username ?? '—'}</p>
                 </div>
-                {profile?.displayName && (
-                  <div>
-                    <span className="text-wf-text-muted text-sm">Display Name</span>
-                    <p className="text-wf-text">{profile.displayName}</p>
-                  </div>
-                )}
                 <div>
                   <span className="text-wf-text-muted text-sm">Email</span>
                   <p className="text-wf-text">{user.email}</p>
@@ -283,7 +260,6 @@ export default function Profile() {
                 onClick={() => {
                   setEditMode(true);
                   setEditUsername(profile?.username ?? '');
-                  setEditDisplayName(profile?.displayName ?? '');
                 }}
                 className="w-full px-4 py-2 bg-wf-blue/20 text-wf-blue border border-wf-blue/30 rounded-lg hover:bg-wf-blue/30 transition-colors text-sm font-medium"
               >
