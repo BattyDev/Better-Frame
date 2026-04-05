@@ -1,5 +1,5 @@
 -- Seed: Example builds and loadouts for development/demo purposes
--- All seed data uses profiles with '[SEED]' in display_name and '5eed' in UUIDs
+-- All seed data uses profiles with 'seed_' username prefix and '5eed' in UUIDs
 -- ─────────────────────────────────────────────────────────────────────────────
 -- CLEANUP: DELETE FROM profiles WHERE id IN (
 --   '00000000-0000-0000-0000-000000000001',
@@ -13,10 +13,10 @@
 -- SEED PROFILES
 -- ═══════════════════════════════════════════════════════════════════════════════
 
-INSERT INTO profiles (id, username, display_name, is_premium, role) VALUES
-  ('00000000-0000-0000-0000-000000000001', 'betterframe_bot', '[SEED] BetterFrame Bot', false, 'user'),
-  ('00000000-0000-0000-0000-000000000002', 'void_trader', '[SEED] Void Trader', true, 'user'),
-  ('00000000-0000-0000-0000-000000000003', 'steel_essence', '[SEED] Steel Essence', false, 'user')
+INSERT INTO profiles (id, username, is_premium, role) VALUES
+  ('00000000-0000-0000-0000-000000000001', 'seed_betterframe_bot', false, 'user'),
+  ('00000000-0000-0000-0000-000000000002', 'seed_void_trader', true, 'user'),
+  ('00000000-0000-0000-0000-000000000003', 'seed_steel_essence', false, 'user')
 ON CONFLICT (id) DO NOTHING;
 
 -- ═══════════════════════════════════════════════════════════════════════════════
