@@ -5,6 +5,12 @@ import { getItemImageUrl } from '../data/warframeData';
 
 const CATEGORY_CARDS = [
   {
+    label: 'Loadouts',
+    description: 'Complete loadout setups with every slot filled.',
+    to: '/browse/loadouts',
+    image: null,
+  },
+  {
     label: 'Warframes',
     description: 'Browse and create warframe builds with full stat calculations.',
     to: '/builds/warframe',
@@ -46,12 +52,6 @@ const CATEGORY_CARDS = [
     to: '/builds/necramech',
     image: getItemImageUrl('voidrig-51bc3a4b3c.png'),
   },
-  {
-    label: 'Loadouts',
-    description: 'Complete loadout setups with every slot filled.',
-    to: '/browse/loadouts',
-    image: null,
-  },
 ];
 
 export function Home() {
@@ -92,7 +92,7 @@ export function Home() {
 
       {/* ── Category Cards ── */}
       <section className="w-full max-w-5xl pb-12">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           {CATEGORY_CARDS.map((card) => (
             <Link
               key={card.to}
