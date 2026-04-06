@@ -1,7 +1,7 @@
-import { useMemo } from 'react';
+import { useMemo, useEffect, useRef } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
-import { fetchLoadoutById, fetchBuildSummariesByIds } from '../lib/social';
+import { fetchLoadoutById, fetchBuildSummariesByIds, incrementViewCount } from '../lib/social';
 import { VoteButtons } from '../components/social/VoteButtons';
 import { CommentsSection } from '../components/social/CommentsSection';
 import { ReportButton } from '../components/social/ReportButton';
@@ -33,6 +33,14 @@ export default function LoadoutPage() {
     enabled: !!id,
   });
 
+  const viewCounted = useRef(false);
+  useEffect(() => {
+    if (id && !viewCounted.current) {
+      viewCounted.current = true;
+      incrementViewCount(id, 'loadout');
+    }
+  }, [id]);
+
   // Collect all build IDs from the loadout to fetch summaries
   const buildIds = useMemo(() => {
     if (!loadout) return [];
@@ -60,7 +68,7 @@ export default function LoadoutPage() {
       <div className="flex-1 flex items-center justify-center">
         <div className="text-center">
           <p className="text-wf-text mb-2">Loadout not found or not public.</p>
-          <Link to="/browse" className="text-wf-gold hover:underline text-sm">
+          <Link to="/browse/loadouts" className="text-wf-gold hover:underline text-sm">
             ← Back to Browse
           </Link>
         </div>
@@ -72,7 +80,7 @@ export default function LoadoutPage() {
 
   return (
     <div className="flex-1 p-4 lg:p-6 max-w-3xl mx-auto w-full">
-      <Link to="/browse" className="text-sm text-wf-text-muted hover:text-wf-text mb-4 inline-block">
+      <Link to="/browse/loadouts" className="text-sm text-wf-text-muted hover:text-wf-text mb-4 inline-block">
         ← Browse
       </Link>
 

@@ -78,6 +78,7 @@ export interface Loadout {
   focusSchool: FocusSchool | null;
   isPublic: boolean;
   voteScore: number;
+  viewCount: number;
   gameVersion: string | null;
   createdAt: string;
   updatedAt: string;
@@ -137,6 +138,22 @@ export interface PublicBuildSummary {
 
 export interface PublicBuild extends PublicBuildSummary {
   config: BuildConfig;
+}
+
+export interface PublicLoadoutSummary {
+  id: string;
+  name: string;
+  description: string | null;
+  focusSchool: FocusSchool | null;
+  isPublic: boolean;
+  voteScore: number;
+  viewCount: number;
+  gameVersion: string | null;
+  filledSlots: string[];
+  slotCount: number;
+  createdAt: string;
+  updatedAt: string;
+  author: { id: string; username: string };
 }
 
 export interface Vote {

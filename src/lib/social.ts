@@ -3,9 +3,11 @@ import { supabase } from './supabase';
 import type {
   PublicBuildSummary,
   PublicBuild,
+  PublicLoadoutSummary,
   Comment,
   ReportReason,
   ItemCategory,
+  FocusSchool,
   Loadout,
 } from '../types';
 
@@ -147,10 +149,13 @@ export async function fetchProfileByUsername(
 
 // ─── View Count ────────────────────────────────────────────────────────────
 
-export async function incrementViewCount(buildId: string): Promise<void> {
+export async function incrementViewCount(
+  targetId: string,
+  targetType: 'build' | 'loadout' = 'build',
+): Promise<void> {
   await supabase.rpc('increment_view_count', {
-    p_target_id: buildId,
-    p_target_type: 'build',
+    p_target_id: targetId,
+    p_target_type: targetType,
   });
 }
 
@@ -247,6 +252,7 @@ export async function fetchLoadoutById(id: string): Promise<(Loadout & { author:
     focusSchool: data.focus_school ?? null,
     isPublic: data.is_public,
     voteScore: data.vote_score ?? 0,
+    viewCount: data.view_count ?? 0,
     gameVersion: data.game_version ?? null,
     createdAt: data.created_at,
     updatedAt: data.updated_at,
@@ -439,6 +445,94 @@ export async function searchPublicLoadouts(
         },
       };
     }),
+    total: count ?? 0,
+  };
+}
+
+// ─── Browse Loadouts ──────────────────────────────────────────────────────
+
+const LOADOUT_SLOT_MAP: { column: string; label: string }[] = [
+  { column: 'warframe_build_id', label: 'Warframe' },
+  { column: 'primary_build_id', label: 'Primary' },
+  { column: 'secondary_build_id', label: 'Secondary' },
+  { column: 'melee_build_id', label: 'Melee' },
+  { column: 'exalted_build_id', label: 'Exalted' },
+  { column: 'companion_build_id', label: 'Companion' },
+  { column: 'companion_weapon_build_id', label: 'Companion Weapon' },
+  { column: 'archwing_build_id', label: 'Archwing' },
+  { column: 'archgun_build_id', label: 'Arch-Gun' },
+  { column: 'archmelee_build_id', label: 'Arch-Melee' },
+  { column: 'necramech_build_id', label: 'Necramech' },
+  { column: 'parazon_build_id', label: 'Parazon' },
+  { column: 'kdrive_build_id', label: 'K-Drive' },
+];
+
+export interface LoadoutBrowseOptions {
+  search?: string;
+  sort?: SortOption;
+  page?: number;
+  pageSize?: number;
+  focusSchool?: FocusSchool | 'all';
+}
+
+function toPublicLoadoutSummary(row: Record<string, unknown>): PublicLoadoutSummary {
+  const profiles = row.profiles as { id: string; username: string } | null;
+  const filled = LOADOUT_SLOT_MAP
+    .filter((s) => row[s.column] != null)
+    .map((s) => s.label);
+
+  return {
+    id: row.id as string,
+    name: row.name as string,
+    description: row.description as string | null,
+    focusSchool: (row.focus_school as FocusSchool | null) ?? null,
+    isPublic: row.is_public as boolean,
+    voteScore: (row.vote_score as number) ?? 0,
+    viewCount: (row.view_count as number) ?? 0,
+    gameVersion: row.game_version as string | null,
+    filledSlots: filled,
+    slotCount: filled.length,
+    createdAt: row.created_at as string,
+    updatedAt: row.updated_at as string,
+    author: {
+      id: profiles?.id ?? (row.user_id as string),
+      username: profiles?.username ?? 'Unknown',
+    },
+  };
+}
+
+export async function fetchPublicLoadouts(
+  options: LoadoutBrowseOptions = {},
+): Promise<{ loadouts: PublicLoadoutSummary[]; total: number }> {
+  const { search = '', sort = 'newest', page = 0, pageSize = 20, focusSchool = 'all' } = options;
+
+  let query = supabase
+    .from('loadouts')
+    .select('*, profiles!user_id(id, username)', { count: 'exact' })
+    .eq('is_public', true);
+
+  if (search) {
+    query = query.ilike('name', `%${search}%`);
+  }
+  if (focusSchool !== 'all') {
+    query = query.eq('focus_school', focusSchool);
+  }
+
+  if (sort === 'newest') {
+    query = query.order('created_at', { ascending: false });
+  } else if (sort === 'top') {
+    query = query.order('vote_score', { ascending: false });
+  } else if (sort === 'views') {
+    query = query.order('view_count', { ascending: false });
+  }
+
+  query = query.range(page * pageSize, (page + 1) * pageSize - 1);
+
+  const { data, error, count } = await query;
+  if (error) throw error;
+
+  return {
+    loadouts: (data ?? []).map(toPublicLoadoutSummary),
     total: count ?? 0,
   };
 }

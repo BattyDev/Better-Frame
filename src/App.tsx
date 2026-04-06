@@ -24,6 +24,7 @@ function BuilderRouter() {
 import Loadout from './pages/Loadout';
 import LoadoutPage from './pages/LoadoutPage';
 import Browse from './pages/Browse';
+import BrowseLoadouts from './pages/BrowseLoadouts';
 import Profile from './pages/Profile';
 import BuildPage from './pages/BuildPage';
 import UserProfile from './pages/UserProfile';
@@ -69,6 +70,7 @@ function AppContent() {
         <Route path="/loadout" element={<Loadout />} />
         <Route path="/loadout/:id" element={<LoadoutPage />} />
         <Route path="/browse" element={<Browse />} />
+        <Route path="/browse/loadouts" element={<BrowseLoadouts />} />
         <Route path="/build/:id" element={<BuildPage />} />
         <Route path="/compare" element={<Compare />} />
         <Route path="/dashboard" element={<Dashboard />} />

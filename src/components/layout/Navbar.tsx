@@ -82,6 +82,7 @@ export default function Navbar() {
   ];
 
   const browseLinks = [
+    { to: '/browse/loadouts', label: 'Loadouts' },
     { to: '/builds/warframe', label: 'Warframes' },
     { to: '/builds/primary', label: 'Primary Weapons' },
     { to: '/builds/secondary', label: 'Secondary Weapons' },
@@ -89,7 +90,6 @@ export default function Navbar() {
     { to: '/builds/companion', label: 'Companions' },
     { to: '/builds/archwing', label: 'Archwing' },
     { to: '/builds/necramech', label: 'Necramech' },
-    { to: '/loadout', label: 'Loadouts' },
     { to: '/compare', label: 'Compare Builds' },
   ];
 
