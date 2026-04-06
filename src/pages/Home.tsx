@@ -49,7 +49,7 @@ const CATEGORY_CARDS = [
   {
     label: 'Loadouts',
     description: 'Complete loadout setups with every slot filled.',
-    to: '/loadout',
+    to: '/browse/loadouts',
     image: null,
   },
 ];
