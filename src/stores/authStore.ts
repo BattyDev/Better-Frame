@@ -137,8 +137,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
 
     const { data, error: dbError } = await supabase
       .from('profiles')
-      .update(updates)
-      .eq('id', state.user.id)
+      .upsert({ id: state.user.id, ...updates })
       .select()
       .single();
 
@@ -150,14 +149,17 @@ export const useAuthStore = create<AuthState>((set, get) => ({
       return { error: 'Failed to update profile' };
     }
 
-    if (state.profile) {
-      set({
-        profile: {
-          ...state.profile,
-          ...data,
-        },
-      });
-    }
+    set({
+      profile: {
+        id: data.id,
+        username: data.username,
+        avatarUrl: data.avatar_url,
+        isPremium: data.is_premium,
+        role: data.role,
+        createdAt: data.created_at,
+        updatedAt: data.updated_at,
+      },
+    });
 
     return { error: null };
   },
