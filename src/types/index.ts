@@ -197,3 +197,37 @@ export interface Report {
   status: 'pending' | 'reviewed' | 'dismissed';
   createdAt: string;
 }
+
+export type BugSeverity = 'low' | 'normal' | 'high' | 'critical';
+
+export type BugStatus =
+  | 'open'
+  | 'triaged'
+  | 'in_progress'
+  | 'resolved'
+  | 'wont_fix'
+  | 'duplicate';
+
+export interface BugReport {
+  id: string;
+  reporter_id: string | null;
+  title: string;
+  description: string;
+  steps: string | null;
+  severity: BugSeverity;
+  url: string | null;
+  user_agent: string | null;
+  viewport: string | null;
+  app_version: string | null;
+  status: BugStatus;
+  notes: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface BugReportInput {
+  title: string;
+  description: string;
+  steps?: string;
+  severity: BugSeverity;
+}
