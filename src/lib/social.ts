@@ -9,6 +9,7 @@ import type {
   ItemCategory,
   FocusSchool,
   Loadout,
+  BugReportInput,
 } from '../types';
 
 // ─── Browse ────────────────────────────────────────────────────────────────
@@ -563,6 +564,29 @@ export async function reportTarget(
     target_id: targetId,
     reason,
     notes: notes.trim() || null,
+  });
+  if (error) throw error;
+}
+
+export async function submitBugReport(input: BugReportInput): Promise<void> {
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) throw new Error('Must be signed in to submit a bug report');
+
+  const viewport =
+    typeof window !== 'undefined' ? `${window.innerWidth}x${window.innerHeight}` : null;
+
+  const { error } = await supabase.from('bug_reports').insert({
+    reporter_id: user.id,
+    title: input.title.trim(),
+    description: input.description.trim(),
+    steps: input.steps?.trim() || null,
+    severity: input.severity,
+    url: typeof window !== 'undefined' ? window.location.href : null,
+    user_agent: typeof navigator !== 'undefined' ? navigator.userAgent : null,
+    viewport,
+    app_version: import.meta.env.VITE_APP_VERSION ?? null,
   });
   if (error) throw error;
 }
