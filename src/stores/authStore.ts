@@ -3,15 +3,26 @@ import type { User, Session } from '@supabase/supabase-js';
 import { supabase } from '../lib/supabase';
 import type { UserProfile } from '../types';
 
-function getEmailRedirectTo(): string | undefined {
+function getSiteBaseUrl(): string | undefined {
   const configuredSiteUrl = import.meta.env.VITE_SITE_URL as string | undefined;
   const baseUrl = configuredSiteUrl || (typeof window !== 'undefined' ? window.location.origin : undefined);
 
   if (!baseUrl) return undefined;
 
-  const normalizedBaseUrl = baseUrl.endsWith('/') ? baseUrl.slice(0, -1) : baseUrl;
-  return `${normalizedBaseUrl}/login`;
+  return baseUrl.endsWith('/') ? baseUrl.slice(0, -1) : baseUrl;
 }
+
+function getEmailRedirectTo(): string | undefined {
+  const baseUrl = getSiteBaseUrl();
+  return baseUrl ? `${baseUrl}/login` : undefined;
+}
+
+function getOAuthRedirectTo(): string | undefined {
+  const baseUrl = getSiteBaseUrl();
+  return baseUrl ? `${baseUrl}/auth/callback` : undefined;
+}
+
+export type OAuthProvider = 'google' | 'discord' | 'apple';
 
 interface AuthState {
   user: User | null;
@@ -21,6 +32,7 @@ interface AuthState {
   initialized: boolean;
   signUp: (email: string, password: string, username: string) => Promise<{ error: string | null }>;
   signIn: (email: string, password: string) => Promise<{ error: string | null }>;
+  signInWithOAuth: (provider: OAuthProvider) => Promise<{ error: string | null }>;
   signOut: () => Promise<void>;
   resendConfirmation: (email: string) => Promise<{ error: string | null }>;
   updateProfile: (updates: { username?: string }) => Promise<{ error: string | null }>;
@@ -103,6 +115,20 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     set({ loading: true });
     const { error } = await supabase.auth.signInWithPassword({ email, password });
     set({ loading: false });
+
+    if (error) {
+      return { error: error.message };
+    }
+
+    return { error: null };
+  },
+
+  signInWithOAuth: async (provider) => {
+    const redirectTo = getOAuthRedirectTo();
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider,
+      options: redirectTo ? { redirectTo } : undefined,
+    });
 
     if (error) {
       return { error: error.message };

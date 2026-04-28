@@ -1,12 +1,14 @@
 import { useState } from 'react';
 import { useAuthStore } from '../stores/authStore';
-import { Navigate, Link } from 'react-router-dom';
+import { Navigate, Link, useSearchParams } from 'react-router-dom';
+import { OAuthButtons } from '../components/auth/OAuthButtons';
 
 export default function Login() {
   const { user, signIn, loading } = useAuthStore();
+  const [searchParams] = useSearchParams();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(() => searchParams.get('error'));
 
   if (user) {
     return <Navigate to="/profile" replace />;
@@ -65,6 +67,9 @@ export default function Login() {
             {loading ? 'Signing in...' : 'Sign In'}
           </button>
         </form>
+        <div className="mt-4">
+          <OAuthButtons withDivider onError={setError} />
+        </div>
         <p className="mt-4 text-center text-sm text-wf-text-muted">
           Don't have an account?{' '}
           <Link to="/signup" className="text-wf-blue hover:text-wf-blue-light underline">

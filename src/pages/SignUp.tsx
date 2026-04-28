@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useAuthStore } from '../stores/authStore';
 import { Navigate, Link } from 'react-router-dom';
+import { OAuthButtons } from '../components/auth/OAuthButtons';
 
 export default function SignUp() {
   const { user, signUp, loading } = useAuthStore();
@@ -106,6 +107,9 @@ export default function SignUp() {
             {loading ? 'Creating account...' : 'Create Account'}
           </button>
         </form>
+        <div className="mt-4">
+          <OAuthButtons withDivider onError={setError} />
+        </div>
         <p className="mt-4 text-center text-sm text-wf-text-muted">
           Already have an account?{' '}
           <Link to="/login" className="text-wf-blue hover:text-wf-blue-light underline">
