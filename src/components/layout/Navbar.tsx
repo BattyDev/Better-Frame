@@ -3,6 +3,7 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../../stores/authStore';
 import { searchWarframes, getItemImageUrl } from '../../data/warframeData';
 import { searchWeapons } from '../../data/weaponData';
+import { BugReportModal } from '../BugReportModal';
 
 interface QuickResult {
   name: string;
@@ -48,6 +49,7 @@ export default function Navbar() {
   const [searchQuery, setSearchQuery] = useState('');
   const [showDropdown, setShowDropdown] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [bugOpen, setBugOpen] = useState(false);
   const searchRef = useRef<HTMLDivElement>(null);
   const quickResults = useQuickSearch(searchQuery);
 
@@ -193,6 +195,15 @@ export default function Navbar() {
 
         {/* Right: auth (desktop) */}
         <div className="hidden sm:flex items-center gap-1 shrink-0">
+          {user && (
+            <button
+              onClick={() => setBugOpen(true)}
+              className="px-3 py-1.5 rounded-md text-sm font-medium text-wf-text-dim hover:text-wf-warning hover:bg-wf-bg-light transition-colors"
+              title="Report a bug"
+            >
+              Report Bug
+            </button>
+          )}
           {user ? (
             <>
               <Link
@@ -355,6 +366,17 @@ export default function Navbar() {
 
           {/* Mobile auth links */}
           <div className="flex flex-col gap-1 border-t border-wf-border pt-3">
+            {user && (
+              <button
+                onClick={() => {
+                  setMobileMenuOpen(false);
+                  setBugOpen(true);
+                }}
+                className="px-3 py-2 rounded-md text-sm font-medium text-left text-wf-text-dim hover:text-wf-warning hover:bg-wf-bg-light transition-colors"
+              >
+                Report Bug
+              </button>
+            )}
             {user ? (
               <>
                 <Link
@@ -399,6 +421,8 @@ export default function Navbar() {
           </div>
         </div>
       )}
+
+      <BugReportModal open={bugOpen} onClose={() => setBugOpen(false)} />
     </nav>
   );
 }
