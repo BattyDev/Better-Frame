@@ -14,18 +14,6 @@ interface ProviderConfig {
 
 const PROVIDERS: ProviderConfig[] = [
   {
-    id: 'google',
-    label: 'Continue with Google',
-    icon: (
-      <svg className="h-5 w-5" viewBox="0 0 24 24" aria-hidden="true">
-        <path
-          fill="#EA4335"
-          d="M12 10.2v3.9h5.5c-.24 1.4-1.7 4.1-5.5 4.1-3.3 0-6-2.7-6-6.2s2.7-6.2 6-6.2c1.9 0 3.1.8 3.8 1.5l2.6-2.5C16.7 3 14.6 2 12 2 6.9 2 2.8 6.1 2.8 12S6.9 22 12 22c6.9 0 11.5-4.9 11.5-11.7 0-.8-.1-1.4-.2-2.1H12z"
-        />
-      </svg>
-    ),
-  },
-  {
     id: 'discord',
     label: 'Continue with Discord',
     icon: (
