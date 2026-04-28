@@ -44,15 +44,18 @@
   <g filter="url(#glow)">
     <!-- left T -->
     <g transform="translate(38 62)">
+      <!-- crossbar with serifs -->
       <path d="M0 0 L84 0 L76 24 L8 24 Z" fill="url(#gold)" stroke="#0aa39a" stroke-width="1.8"/>
-      <path d="M30 24 L54 24 L56 116 Q56 126 64 130 L20 130 Q28 126 28 116 Z" fill="url(#gold)" stroke="#0aa39a" stroke-width="1.8"/>
-      <path d="M10 130 L74 130 L80 146 L4 146 Z" fill="url(#gold)" stroke="#0aa39a" stroke-width="1.8"/>
+      <!-- straight tapering stem -->
+      <path d="M34 24 L50 24 L48 134 L36 134 Z" fill="url(#gold)" stroke="#0aa39a" stroke-width="1.8"/>
+      <!-- narrow foot serif -->
+      <path d="M26 134 L58 134 L62 146 L22 146 Z" fill="url(#gold)" stroke="#0aa39a" stroke-width="1.8"/>
     </g>
     <!-- right T -->
     <g transform="translate(134 62)">
       <path d="M0 0 L84 0 L76 24 L8 24 Z" fill="url(#gold)" stroke="#0aa39a" stroke-width="1.8"/>
-      <path d="M30 24 L54 24 L56 116 Q56 126 64 130 L20 130 Q28 126 28 116 Z" fill="url(#gold)" stroke="#0aa39a" stroke-width="1.8"/>
-      <path d="M10 130 L74 130 L80 146 L4 146 Z" fill="url(#gold)" stroke="#0aa39a" stroke-width="1.8"/>
+      <path d="M34 24 L50 24 L48 134 L36 134 Z" fill="url(#gold)" stroke="#0aa39a" stroke-width="1.8"/>
+      <path d="M26 134 L58 134 L62 146 L22 146 Z" fill="url(#gold)" stroke="#0aa39a" stroke-width="1.8"/>
     </g>
   </g>
 
