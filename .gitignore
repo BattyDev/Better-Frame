@@ -18,14 +18,17 @@ dist-ssr
 .env.test
 
 # Playwright
-/test-results/
-/playwright-report/
-/blob-report/
-/playwright/.cache/
-/tests/e2e/.auth/
+test-results/
+playwright-report/
+blob-report/
+playwright/.cache/
+tests/e2e/.auth/
 
 # Claude Code
 .claude/settings.local.json
+
+# Dev artifacts
+worldstate_tmp.json
 
 # Editor directories and files
 .vscode/*
