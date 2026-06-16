@@ -3,10 +3,12 @@
 import { readFileSync, writeFileSync } from 'fs';
 import { resolve, dirname } from 'path';
 import { fileURLToPath } from 'url';
+import { createRequire } from 'module';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
+const require = createRequire(import.meta.url);
 const SRC_DATA = resolve(__dirname, '../src/data');
-const NODE_DATA = resolve(__dirname, '../node_modules/warframe-items/data/json');
+const NODE_DATA = resolve(dirname(require.resolve('warframe-items/package.json')), 'data/json');
 
 // Warframes: only keep fields we use
 const warframes = JSON.parse(readFileSync(resolve(NODE_DATA, 'Warframes.json'), 'utf-8'));
