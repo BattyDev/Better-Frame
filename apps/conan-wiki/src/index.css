@@ -1,0 +1,41 @@
+@import "tailwindcss";
+
+@theme {
+  /* Conan-inspired Hyborian palette — iron, rust, parchment */
+  --color-cn-bg-dark: #1a1410;
+  --color-cn-bg: #25201b;
+  --color-cn-bg-card: #2f2922;
+  --color-cn-bg-hover: #3a332a;
+
+  --color-cn-accent: #b8651f;
+  --color-cn-accent-light: #d4823a;
+  --color-cn-accent-dim: #7a4214;
+
+  --color-cn-text: #e8dcc0;
+  --color-cn-text-dim: #a89478;
+  --color-cn-text-muted: #6e5e48;
+
+  --color-cn-border: #4a3e30;
+  --color-cn-border-light: #6e5e48;
+
+  --color-cn-danger: #c14a3a;
+  --color-cn-success: #6b8e3d;
+
+  --font-sans: "Inter", system-ui, -apple-system, sans-serif;
+  --font-display: "Cinzel", "Inter", serif;
+}
+
+body {
+  margin: 0;
+  background-color: var(--color-cn-bg-dark);
+  color: var(--color-cn-text);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+#root {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
