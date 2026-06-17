@@ -95,13 +95,32 @@ function dedupBy(rows, keyFn) {
 
 const BATCH_SIZE = 500;
 
+const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+
+// Retry transient network failures (ECONNRESET, fetch failed, etc.) with
+// exponential backoff. PostgREST errors (RLS, constraint violations) come
+// back in `error` and are NOT retried — only thrown fetch/network errors.
+async function withRetry(label, fn, attempts = 4) {
+  for (let i = 0; i < attempts; i++) {
+    try {
+      return await fn();
+    } catch (e) {
+      const last = i === attempts - 1;
+      const wait = 1000 * 2 ** i;
+      console.warn(`  ~ ${label} retry ${i + 1}/${attempts} (${e.message ?? e}); waiting ${wait}ms`);
+      if (last) throw e;
+      await sleep(wait);
+    }
+  }
+}
+
 async function upsertInBatches(table, rows, onConflict) {
   let total = 0;
   for (let i = 0; i < rows.length; i += BATCH_SIZE) {
     const batch = rows.slice(i, i + BATCH_SIZE);
-    const { error } = await supabase
-      .from(table)
-      .upsert(batch, onConflict ? { onConflict } : undefined);
+    const { error } = await withRetry(`${table}@${i}`, () =>
+      supabase.from(table).upsert(batch, onConflict ? { onConflict } : undefined)
+    );
     if (error) {
       console.error(`  ! ${table} batch at row ${i}:`, error.message);
       throw error;
@@ -113,7 +132,9 @@ async function upsertInBatches(table, rows, onConflict) {
 
 async function truncateAndInsert(table, rows) {
   // Service role bypasses RLS so DELETE works without policies.
-  const { error: delErr } = await supabase.from(table).delete().gte('id', 0);
+  const { error: delErr } = await withRetry(`${table}.delete`, () =>
+    supabase.from(table).delete().gte('id', 0)
+  );
   if (delErr) {
     console.error(`  ! ${table} truncate:`, delErr.message);
     throw delErr;
@@ -121,7 +142,9 @@ async function truncateAndInsert(table, rows) {
   let total = 0;
   for (let i = 0; i < rows.length; i += BATCH_SIZE) {
     const batch = rows.slice(i, i + BATCH_SIZE);
-    const { error } = await supabase.from(table).insert(batch);
+    const { error } = await withRetry(`${table}@${i}`, () =>
+      supabase.from(table).insert(batch)
+    );
     if (error) {
       console.error(`  ! ${table} batch at row ${i}:`, error.message);
       throw error;
