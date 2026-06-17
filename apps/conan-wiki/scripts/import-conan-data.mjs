@@ -77,6 +77,20 @@ function readCsv(filename) {
   });
 }
 
+// --- Dedup -----------------------------------------------------------------
+
+// Keep the last row per key. Required for upsert: a single batch cannot
+// contain two rows that conflict on the same constrained column.
+function dedupBy(rows, keyFn) {
+  const m = new Map();
+  for (const r of rows) {
+    const k = keyFn(r);
+    if (k == null) continue;
+    m.set(k, r);
+  }
+  return [...m.values()];
+}
+
 // --- Batch insert / upsert -----------------------------------------------
 
 const BATCH_SIZE = 500;
@@ -121,43 +135,49 @@ async function truncateAndInsert(table, rows) {
 
 async function importItems() {
   const raw = readCsv('items.csv');
-  const rows = raw.map((r) => ({
-    id: int(r.id),
-    name: txt(r.name),
-    type: txt(r.type),
-    grade: txt(r.grade),
-    source: txt(r.source),
-    dlc: txt(r.dlc),
-    equip_slot: txt(r.equip_slot),
-    weapontype: txt(r.weapontype),
-    dmg: num(r.dmg),
-    armor_pen: num(r.armor_pen),
-    armor: num(r.armor),
-    armortype: txt(r.armortype),
-    durability: num(r.durability),
-    weight: num(r.weight),
-    heat_res: num(r.heat_res),
-    cold_res: num(r.cold_res),
-    is_craftable: bool(r.is_craftable),
-    is_crafting_station: bool(r.is_crafting_station),
-    knowledge_feat_ids: txt(r.knowledge_feat_ids),
-  })).filter((r) => r.id != null && r.name);
+  const rows = dedupBy(
+    raw.map((r) => ({
+      id: int(r.id),
+      name: txt(r.name),
+      type: txt(r.type),
+      grade: txt(r.grade),
+      source: txt(r.source),
+      dlc: txt(r.dlc),
+      equip_slot: txt(r.equip_slot),
+      weapontype: txt(r.weapontype),
+      dmg: num(r.dmg),
+      armor_pen: num(r.armor_pen),
+      armor: num(r.armor),
+      armortype: txt(r.armortype),
+      durability: num(r.durability),
+      weight: num(r.weight),
+      heat_res: num(r.heat_res),
+      cold_res: num(r.cold_res),
+      is_craftable: bool(r.is_craftable),
+      is_crafting_station: bool(r.is_crafting_station),
+      knowledge_feat_ids: txt(r.knowledge_feat_ids),
+    })).filter((r) => r.id != null && r.name),
+    (r) => r.id
+  );
   return upsertInBatches('conan_items', rows, 'id');
 }
 
 async function importRecipes() {
   const raw = readCsv('recipes.csv');
-  const rows = raw.map((r) => ({
-    recipe_id: int(r.recipe_id),
-    product_name: txt(r.product_name),
-    category: txt(r.category),
-    player_level: int(r.player_level),
-    kp_cost: int(r.kp_cost),
-    feat_required: txt(r.feat_required),
-    feat_id_required: int(r.feat_id_required),
-    teaches_feat: txt(r.teaches_feat),
-    journey_reward: txt(r.journey_reward),
-  })).filter((r) => r.recipe_id != null && r.product_name);
+  const rows = dedupBy(
+    raw.map((r) => ({
+      recipe_id: int(r.recipe_id),
+      product_name: txt(r.product_name),
+      category: txt(r.category),
+      player_level: int(r.player_level),
+      kp_cost: int(r.kp_cost),
+      feat_required: txt(r.feat_required),
+      feat_id_required: int(r.feat_id_required),
+      teaches_feat: txt(r.teaches_feat),
+      journey_reward: txt(r.journey_reward),
+    })).filter((r) => r.recipe_id != null && r.product_name),
+    (r) => r.recipe_id
+  );
   return upsertInBatches('conan_recipes', rows, 'recipe_id');
 }
 
@@ -180,44 +200,53 @@ async function importRecipeIngredients() {
 
 async function importFeats() {
   const raw = readCsv('feats.csv');
-  const rows = raw.map((r) => ({
-    feat: txt(r.feat),
-    category: txt(r.category),
-    min_player_level: int(r.min_player_level),
-    recipes_unlocked: int(r.recipes_unlocked),
-    is_ancestral: bool(r.is_ancestral),
-  })).filter((r) => r.feat);
+  const rows = dedupBy(
+    raw.map((r) => ({
+      feat: txt(r.feat),
+      category: txt(r.category),
+      min_player_level: int(r.min_player_level),
+      recipes_unlocked: int(r.recipes_unlocked),
+      is_ancestral: bool(r.is_ancestral),
+    })).filter((r) => r.feat),
+    (r) => r.feat
+  );
   return upsertInBatches('conan_feats', rows, 'feat');
 }
 
 async function importThralls() {
   const raw = readCsv('thralls.csv');
-  const rows = raw.map((r) => ({
-    id: txt(r.id),
-    name: txt(r.name),
-    category: txt(r.category),
-    profession: txt(r.profession),
-    race: txt(r.race),
-    faction: txt(r.faction),
-    crafting_spec: txt(r.crafting_spec),
-    capturable: bool(r.capturable),
-  })).filter((r) => r.id && r.name);
+  const rows = dedupBy(
+    raw.map((r) => ({
+      id: txt(r.id),
+      name: txt(r.name),
+      category: txt(r.category),
+      profession: txt(r.profession),
+      race: txt(r.race),
+      faction: txt(r.faction),
+      crafting_spec: txt(r.crafting_spec),
+      capturable: bool(r.capturable),
+    })).filter((r) => r.id && r.name),
+    (r) => r.id
+  );
   return upsertInBatches('conan_thralls', rows, 'id');
 }
 
 async function importCreatures() {
   const raw = readCsv('creatures.csv');
-  const rows = raw.map((r) => ({
-    id: txt(r.id),
-    name: txt(r.name),
-    hp: num(r.hp),
-    armor: num(r.armor),
-    temperament: txt(r.temperament),
-    map: txt(r.map),
-    biomes: txt(r.biomes),
-    locations: txt(r.locations),
-    drops: txt(r.drops),
-  })).filter((r) => r.id && r.name);
+  const rows = dedupBy(
+    raw.map((r) => ({
+      id: txt(r.id),
+      name: txt(r.name),
+      hp: num(r.hp),
+      armor: num(r.armor),
+      temperament: txt(r.temperament),
+      map: txt(r.map),
+      biomes: txt(r.biomes),
+      locations: txt(r.locations),
+      drops: txt(r.drops),
+    })).filter((r) => r.id && r.name),
+    (r) => r.id
+  );
   return upsertInBatches('conan_creatures', rows, 'id');
 }
 
