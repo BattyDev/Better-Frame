@@ -8,7 +8,8 @@
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "format": "prettier --write \"src/**/*.{ts,tsx}\"",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "import-conan-data": "node scripts/import-conan-data.mjs"
   },
   "dependencies": {
     "@better-frame/auth": "*",
@@ -22,6 +23,8 @@
   "devDependencies": {
     "@better-frame/config": "*",
     "@tailwindcss/vite": "^4.2.2",
+    "csv-parse": "^5.6.0",
+    "dotenv": "^17.4.2",
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",
     "@vitejs/plugin-react": "^6.0.1",
